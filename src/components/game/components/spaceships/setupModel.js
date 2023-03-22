@@ -3,7 +3,7 @@ import { createBullet } from "./bullets/bullets";
 
 import socketIO from 'socket.io-client';
 
-const socket = socketIO.connect('http://localhost:4000');
+const socket = socketIO.connect('https://graficas-web-api.vercel.app/');
 
 function setupModel(data, scene) {
     let bulletsLeft = [];
