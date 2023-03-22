@@ -1,6 +1,6 @@
 .background-configurations {
     /* background-image: url('/images/ajustes-fondo.png'); */
-    background-image: url('http://localhost:3000/images/ajustes-fondo.png');
+    background-image: url('https://graficas-web-front.vercel.app/images/ajustes-fondo.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -18,7 +18,7 @@
 }
 
 .image-life3 {
-    background-image: url('http://localhost:3000/images/3v.png');
+    background-image: url('https://graficas-web-front.vercel.app/images/3v.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -27,7 +27,7 @@
 }
 
 .image-life2 {
-    background-image: url('http://localhost:3000/images/2v.png');
+    background-image: url('https://graficas-web-front.vercel.app/images/2v.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;

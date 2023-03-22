@@ -1,5 +1,5 @@
 .game-background {
-    background-image: url('http://localhost:3000/images/juego-fondo.png');
+    background-image: url('https://graficas-web-front.vercel.app/images/juego-fondo.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
