@@ -1,9 +1,6 @@
 import { React, useEffect } from "react";
 import './game.css';
 import { World } from './world/world.js';
-import socketIO from 'socket.io-client';
-
-const socket = socketIO.connect('http://localhost:4000');
 
 async function main() {
     const container = document.querySelector('#scene-container');

@@ -2,10 +2,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { setupModel } from './setupModel';
 import { MathUtils } from 'three';
 
-async function loadSpaceships(scene, container) {
+async function loadSpaceships(scene) {
     const loader = new GLTFLoader();
     const naveData = await loader.loadAsync('/models/NaveVillanoTest.glb');
-    const nave = setupModel(naveData, scene, container);
+    const nave = setupModel(naveData, scene);
     nave.rotation.y = MathUtils.degToRad(-90);
     nave.scale.set(0.1, 0.1, 0.1);
 

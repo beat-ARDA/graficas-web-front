@@ -51,7 +51,7 @@ class World {
         // controls.target.copy(parrot.position);
         // loop.updatables.push(parrot, flamingo, stork, nave);
         // scene.add(nave);
-        const { nave } = await loadSpaceships(scene, containerClass);
+        const { nave } = await loadSpaceships(scene);
         controls.target.copy(nave.position);
         loop.updatables.push(nave);
         scene.add(nave);
