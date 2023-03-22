@@ -3,7 +3,9 @@ import { createBullet } from "./bullets/bullets";
 
 import socketIO from 'socket.io-client';
 
-const socket = socketIO.connect('https://graficas-web-api.vercel.app/');
+const io = require("socket.io-client");
+const socket = io("https://graficas-web-api.vercel.app");
+//const socket = socketIO.connect('https://graficas-web-api.vercel.app');
 
 function setupModel(data, scene) {
     let bulletsLeft = [];
