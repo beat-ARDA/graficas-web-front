@@ -1,0 +1,8 @@
+.game-background {
+    background-image: url('http://localhost:3000/images/juego-fondo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+}

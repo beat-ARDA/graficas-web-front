@@ -1,0 +1,99 @@
+.background-configurations {
+    /* background-image: url('/images/ajustes-fondo.png'); */
+    background-image: url('http://localhost:3000/images/ajustes-fondo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+}
+
+.color-yellow {
+    color: yellow !important;
+    cursor: pointer;
+}
+
+.point {
+    cursor: pointer;
+}
+
+.image-life3 {
+    background-image: url('http://localhost:3000/images/3v.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-life2 {
+    background-image: url('http://localhost:3000/images/2v.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-life1 {
+    background-image: url('http://localhost:3000/images/1v.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-vol5 {
+    background-image: url('http://localhost:3000/images/v5.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-vol4 {
+    background-image: url('http://localhost:3000/images/v4.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-vol3 {
+    background-image: url('http://localhost:3000/images/v3.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-vol2 {
+    background-image: url('http://localhost:3000/images/v2.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-vol1 {
+    background-image: url('http://localhost:3000/images/v1.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}
+
+.image-vol0 {
+    background-image: url('http://localhost:3000/images/v0.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 25%;
+    width: 25%;
+}

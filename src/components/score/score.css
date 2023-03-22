@@ -1,0 +1,17 @@
+.score-background {
+    background-image: url('http://localhost:3000/images/puntuaciones-fondo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+}
+
+.btn-gray-background {
+    background-image: url('http://localhost:3000/images/boton-volver-puntuaciones.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+}
