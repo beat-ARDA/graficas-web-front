@@ -1,7 +1,7 @@
 import { loadBirds } from '../components/birds/birds.js';
 import { createCube } from '../components/cube.js';
 import { createSkydome } from '../components/skydome/skydome.js';
-import { loadSpaceships } from '../components/spaceships/spaceships.js';
+import { loadSpaceshipP2, loadSpaceshipP1 } from '../components/spaceships/spaceships.js';
 import { createCamera } from '../components/camera.js';
 import { createScene } from '../components/scene.js';
 import { createLights } from '../components/lights.js';
@@ -51,10 +51,16 @@ class World {
         // controls.target.copy(parrot.position);
         // loop.updatables.push(parrot, flamingo, stork, nave);
         // scene.add(nave);
-        const { nave } = await loadSpaceships(scene);
-        controls.target.copy(nave.position);
-        loop.updatables.push(nave);
-        scene.add(nave);
+        const { naveP1 } = await loadSpaceshipP1(scene);
+        const { naveP2 } = await loadSpaceshipP2(scene);
+        naveP1.position.z = naveP2.position.z;
+        naveP1.position.y = naveP2.position.y;
+        naveP1.position.x = naveP2.position.x;
+        naveP2.position.z = -1;
+        controls.target.copy(naveP1.position);
+        loop.updatables.push(naveP1);
+        loop.updatables.push(naveP2);
+        scene.add(naveP1, naveP2);
     }
 
     start() {
