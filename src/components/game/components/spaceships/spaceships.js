@@ -4,10 +4,10 @@ import { MathUtils } from 'three';
 
 async function loadSpaceships(scene) {
     const loader = new GLTFLoader();
-    const naveData = await loader.loadAsync('/models/NaveVillanoTest.glb');
+    const naveData = await loader.loadAsync('/models/NaveHeroeTest.glb');
     const nave = setupModel(naveData, scene);
-    nave.rotation.y = MathUtils.degToRad(-90);
-    nave.scale.set(0.1, 0.1, 0.1);
+    // nave.rotation.y = MathUtils.degToRad(-90);
+    // nave.scale.set(0.1, 0.1, 0.1);
 
     return { nave };
 }
