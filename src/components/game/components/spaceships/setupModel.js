@@ -1,121 +1,66 @@
-import { MathUtils } from "three";
-import { createBullet } from "./bullets/bullets";
+const keyboards = {
+    "w": 87,
+    "s": 83,
+    "a": 65,
+    "d": 68,
+    "space": 32
+}
 
-import socketIO from 'socket.io-client';
+const dirHeroe = {
+    "left": false,
+    "right": false,
+    "down": false,
+    "up": false
+};
 
-const io = require("socket.io-client");
-const socket = io("https://graficas-web-api.vercel.app");
-//const socket = socketIO.connect('https://graficas-web-api.vercel.app');
+async function onHeroeMove(event) {
+    var keyCode = event.which;
 
-function setupModel(data, scene) {
-    let bulletsLeft = [];
-    let bulletsRight = [];
-    let bulletsDelete = [];
-    let bulletMove = false;
-    let left = true;
-    let right = false;
-    let arriba, abajo = false;
+    if (keyCode == keyboards.a) {
+        dirHeroe.left = true;
+    } else if (keyCode == keyboards.d) {
+        dirHeroe.right = true;
+    } else if (keyCode == keyboards.w) {
+        dirHeroe.up = true;
+    } else if (keyCode == keyboards.s) {
+        dirHeroe.down = true;
+    } else if (keyCode == keyboards.space) {
+
+    }
+};
+
+async function onHeoreStop(event) {
+    var keyCode = event.which;
+
+    if (keyCode == keyboards.w) {
+        dirHeroe.up = false;
+    } else if (keyCode == keyboards.s) {
+        dirHeroe.down = false;
+    } else if (keyCode == keyboards.a) {
+        dirHeroe.left = false;
+    } else if (keyCode == keyboards.d) {
+        dirHeroe.right = false;
+    }
+};
+
+function setupModelHeroe(data) {
     const model = data.scene.children[0];
 
     model.tick = (delta) => {
+        //Move spacehsip around axis x
+        model.position.x = dirHeroe.left ? model.position.x - 0.1 : (
+            dirHeroe.right ? model.position.x + 0.1 : model.position.x);
 
-        if (bulletMove) {
-            bulletsLeft.map((bullet) => {
-                bullet.position.x -= 0.05;
-                if (bullet.position.x <= -2)
-                    bulletsDelete.push(bullet);
-            });
-
-            bulletsRight.map((bullet) => {
-                bullet.position.x += 0.05;
-                if (bullet.position.x >= 2)
-                    bulletsDelete.push(bullet);
-            });
-        }
-
-        bulletsDelete.map((bullet) => scene.remove(bullet));
-        bulletsDelete = [];
-
-        if (arriba)
-            model.position.y += 0.1;
-        else if (abajo)
-            model.position.y -= 0.1;
+        //Move spacehsip around axis y
+        model.position.y = dirHeroe.down ? model.position.y - 0.1 : (
+            dirHeroe.up ? model.position.y + 0.1 : model.position.y);
     };
 
-    socket.on('moveLeft', () => {
-        left = true;
-        right = false;
-        model.rotation.y = MathUtils.degToRad(275);
-    });
+    document.addEventListener("keydown", onHeroeMove, false);
+    document.addEventListener("keyup", onHeoreStop, false);
 
-    socket.on('moveRight', () => {
-        left = false;
-        right = true;
-        model.rotation.y = MathUtils.degToRad(90);
-    });
-
-    socket.on('moveUp', () => {
-        arriba = true;
-    });
-
-    socket.on('moveLeaveUp', () => {
-        arriba = false;
-    });
-
-    socket.on('moveDown', () => {
-        abajo = true;
-    });
-
-    socket.on('moveLeaveDown', () => {
-        abajo = false;
-    });
-
-    document.addEventListener("keydown", onDocumentKeyDown, false);
-    async function onDocumentKeyDown(event) {
-        var keyCode = event.which;
-        if (keyCode == 65) {
-            // left = true;
-            // right = false;
-            // model.rotation.y = MathUtils.degToRad(275);
-            socket.emit('moveLeft');
-        } else if (keyCode == 68) {
-            // left = false;
-            // right = true;
-            // model.rotation.y = MathUtils.degToRad(90);
-            socket.emit('moveRight');
-        } else if (keyCode == 87) {
-            // arriba = true;
-            socket.emit('moveUp');
-        }
-        else if (keyCode == 83) {
-            // abajo = true;
-            socket.emit('moveDown');
-        }
-        else if (keyCode == 32) {
-            let bullet = createBullet(model);
-            if (left)
-                bulletsLeft.push(bullet);
-            else if (right)
-                bulletsRight.push(bullet);
-            scene.add(bullet);
-            bulletMove = true;
-        }
-    };
-
-    document.addEventListener("keyup", onDocumentKeyUp, false);
-    async function onDocumentKeyUp(event) {
-        var keyCode = event.which;
-        if (keyCode == 87) {
-            // arriba = false;
-            socket.emit('moveLeaveUp');
-        }
-        else if (keyCode == 83) {
-            // abajo = false;
-            socket.emit('moveLeaveDown');
-        }
-    };
 
     return model;
 }
 
-export { setupModel };
+export { setupModelHeroe };

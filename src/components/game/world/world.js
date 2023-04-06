@@ -1,11 +1,8 @@
-import { loadBirds } from '../components/birds/birds.js';
-import { createCube } from '../components/cube.js';
-import { createSkydome } from '../components/skydome/skydome.js';
 import { loadSpaceships } from '../components/spaceships/spaceships.js';
 import { createCamera } from '../components/camera.js';
 import { createScene } from '../components/scene.js';
 import { createLights } from '../components/lights.js';
-
+import { MathUtils } from 'three';
 import { createRenderer } from '../systems/renderer.js';
 import { Resizer } from '../systems/Reziser.js';
 import { Loop } from '../systems/Loop.js';
@@ -16,30 +13,21 @@ let renderer;
 let controls;
 let scene;
 let loop;
-let containerClass;
 
 class World {
     constructor(container) {
-        containerClass = container;
+
         camera = createCamera();
         scene = createScene();
         renderer = createRenderer();
         loop = new Loop(camera, scene, renderer);
         container.append(renderer.domElement);
         controls = createControls(camera, renderer.domElement);
-        //const skydome = createSkydome();
-        // const cube = createCube();
-        //controls.target.copy(cube.position);
         const light = createLights();
         loop.updatables.push(controls);
-        // loop.updatables.push(skydome);
-        //loop.updatables.push(cube);
         scene.add(light);
 
         const resizer = new Resizer(container, camera, renderer);
-        // resizer.onResize = () => {
-        //     this.render();
-        // };
     }
 
     render() {
@@ -47,14 +35,12 @@ class World {
     }
 
     async init() {
-        // const { parrot, flamingo, stork, nave } = await loadBirds();
-        // controls.target.copy(parrot.position);
-        // loop.updatables.push(parrot, flamingo, stork, nave);
-        // scene.add(nave);
-        const { nave } = await loadSpaceships(scene);
-        controls.target.copy(nave.position);
-        loop.updatables.push(nave);
-        scene.add(nave);
+        const { spaceShipHeroe } = await loadSpaceships();
+        spaceShipHeroe.rotation.y = MathUtils.degToRad(-45);
+        spaceShipHeroe.scale.set(0.2, 0.2, 0.2);
+
+        loop.updatables.push(spaceShipHeroe);
+        scene.add(spaceShipHeroe);
     }
 
     start() {

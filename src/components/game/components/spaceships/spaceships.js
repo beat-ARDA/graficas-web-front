@@ -1,15 +1,14 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { setupModel } from './setupModel';
-import { MathUtils } from 'three';
+import { setupModelHeroe } from './setupModel';
 
-async function loadSpaceships(scene) {
+async function loadSpaceships() {
     const loader = new GLTFLoader();
-    const naveData = await loader.loadAsync('/models/NaveHeroeTest.glb');
-    const nave = setupModel(naveData, scene);
-    // nave.rotation.y = MathUtils.degToRad(-90);
-    // nave.scale.set(0.1, 0.1, 0.1);
 
-    return { nave };
+    const heroeData = await loader.loadAsync('/models/NaveHeroeTest.glb');
+
+    const spaceShipHeroe = setupModelHeroe(heroeData);
+
+    return { spaceShipHeroe };
 }
 
 export { loadSpaceships };

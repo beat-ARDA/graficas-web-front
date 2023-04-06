@@ -3,9 +3,6 @@ import { SphereGeometry, Mesh, MeshBasicMaterial, TextureLoader } from 'three';
 function createMaterial() {
     const textureLoader = new TextureLoader();
     const texture = textureLoader.load('./textures/bulletTexture.jpg');
-    // texture.wrapS = MirroredRepeatWrapping;
-    // texture.wrapT = MirroredRepeatWrapping;
-    // texture.repeat.set(2, 2);
     const material = new MeshBasicMaterial({
         map: texture,
     });
