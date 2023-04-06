@@ -2,7 +2,7 @@ import { Scene, TextureLoader } from 'three';
 
 function createTexture() {
     const textureLoader = new TextureLoader();
-    const texture = textureLoader.load('./textures/skydome1.jpg');
+    const texture = textureLoader.load('./images/juego-fondo.png');
 
     return texture;
 }
