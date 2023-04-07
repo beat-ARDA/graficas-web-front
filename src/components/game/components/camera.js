@@ -1,4 +1,5 @@
 import { PerspectiveCamera } from 'three';
+import { MathUtils } from 'three';
 
 let left, right = false;
 
@@ -32,16 +33,13 @@ function createCamera() {
     );
     camera.position.set(20, 0, 0);
     camera.tick = () => {
-        if (left) {
-            camera.position.x = 20 * Math.cos(i * 0.01)
-            camera.position.z = 20 * Math.sin(i * 0.01)
-            i++;
-        }
-        else if (right) {
-            camera.position.x = 20 * Math.cos(i * 0.01)
-            camera.position.z = 20 * Math.sin(i * 0.01)
-            i--;
-        }
+
+        i = left ? i + 0.6 : (right ? i - 0.6 : i);
+        i = i >= 360 ? 0 : (i <= -360 ? 0 : i);
+
+        camera.position.x = 20 * Math.cos(MathUtils.degToRad(i));
+        camera.position.z = 20 * Math.sin(MathUtils.degToRad(i));
+
     }
 
     document.addEventListener("keydown", onCameraMove, false);

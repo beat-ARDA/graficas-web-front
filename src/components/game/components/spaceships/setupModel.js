@@ -13,6 +13,7 @@ const dirHeroe = {
     "down": false,
     "up": false
 };
+
 async function onHeroeMove(event) {
     var keyCode = event.which;
 
@@ -50,20 +51,24 @@ function setupModelHeroe(data) {
         //Move spacehsip around axis y
         model.position.y = dirHeroe.down ? model.position.y - 0.1 : (
             dirHeroe.up ? model.position.y + 0.1 : model.position.y);
-        if (dirHeroe.left) {
-            model.position.x = 10 * Math.cos(i * 0.01);
-            model.position.z = 10 * Math.sin(i * 0.01);
-            model.rotation.y = Math.cos(i * 0.01);
-            model.rotation.z = Math.sin(i * 0.01);
 
-            i++;
-        }
-        else if (dirHeroe.right) {
-            model.position.x = 10 * Math.cos(i * 0.01)
-            model.position.z = 10 * Math.sin(i * 0.01)
-            i--;
+        //Incremente i factor
+        i = dirHeroe.left ? i + 0.6 : (dirHeroe.right ? i - 0.6 : i);
+
+
+        //Calculate Position spaceship
+        if (dirHeroe.left || dirHeroe.right) {
+            model.position.x = 10 * Math.cos(MathUtils.degToRad(i));
+            model.position.z = 10 * Math.sin(MathUtils.degToRad(i));
         }
 
+        if (dirHeroe.right)
+            model.rotation.z = 10 * Math.sin(MathUtils.degToRad((180 + i) * 0.10));
+        if (dirHeroe.left)
+            model.rotation.z = 10 * Math.sin(MathUtils.degToRad(i * 0.108));
+
+        //Control the i factor
+        i = i >= 360 ? 0 : (i <= -360 ? 0 : i);
     };
 
     document.addEventListener("keydown", onHeroeMove, false);
