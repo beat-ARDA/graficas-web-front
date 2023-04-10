@@ -14,6 +14,7 @@ function createBullet(spaceship) {
     var bulletGeo = new SphereGeometry(0.06, 25, 25);
     const material = createMaterial();
     const bullet = new Mesh(bulletGeo, material);
+
     bullet.position.x = spaceship.position.x;
     bullet.position.y = spaceship.position.y;
     bullet.position.z = spaceship.position.z;
