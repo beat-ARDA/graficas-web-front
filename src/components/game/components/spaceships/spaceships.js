@@ -23,6 +23,7 @@ async function loadSpaceships(scene) {
         "right": false,
         "shoot": false,
         "shootRecall": 0,
+        "deleteAfterShoot": false,
         "bullets": false
     }
 

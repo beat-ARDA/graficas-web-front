@@ -150,16 +150,22 @@ function setupModelHeroe(data, scene) {
 let bulletsVillain = [];
 
 function setupModelVillain(data, scene, dirVillain, heroe) {
+    //Obtener el modelo
     const model = data.scene.children[0];
+    //Define la variable i, esta varivale sirve para mover algunos objetos en el la escena
     let i = 0;
 
+    //Este es el bucle del modelo se añaade en el archivo world
     model.tick = (delta) => {
         //Verificar si el modelo no a sido removido de la escena
         const modelExists = scene.getObjectByName('villain1') !== undefined;
+        //Se verifica si el modelo existe dentro de la escena
         if (modelExists) {
-            //Charge bullets
+            //Se verifica que no tenga balas el villano y que el arreglo de las balas este vacio
             if (!dirVillain.bullets && bulletsVillain.length <= 0) {
+                //Variable de ayuda para dar direccion a las tres balas del villano
                 const directions = [{ "up": true, "down": false, "rect": false }, { "up": false, "down": true, "rect": false }, { "up": false, "down": false, "rect": true }];
+                //bucle de tres para asignar las balas al arreglo de las balas del villano
                 for (let o = 0; o < 3; o++) {
                     let bullet = createBullet(model);
                     bulletsVillain.push({
@@ -176,32 +182,49 @@ function setupModelVillain(data, scene, dirVillain, heroe) {
                         "bullet": bullet
                     });
                 }
+                //Se cambia a verdadero para indicar que las balas estan cargadas en el villano
                 dirVillain.bullets = true;
             }
 
-            //increment position
+            //Saber si no a sido disparado el arreglo
+            const bulletVillainFilter = bulletsVillain.filter((bulletInfo) => bulletInfo.recentCreated === true);
+            //Codigo para evitar que dispare cuando desaparezca
+            if (bulletVillainFilter.length === 3 && !model.visible) {
+                dirVillain.shoot = false;
+                dirVillain.shootRecall = 0;
+                dirVillain.bullet = false;
+                bulletsVillain = [];
+            }
+
+            //Incrementa o decrementa la variable i dependiendo si el villano va a la derecha o a la izquerda
             i = dirVillain.left ? i + 0.2 : (
                 dirVillain.right ? i - 0.2 : i);
 
-            //Move villain around axis x
-            if (dirVillain.left || dirVillain.right) {
-                model.position.x = 10 * Math.cos(MathUtils.degToRad(i));
-                model.position.z = 10 * Math.sin(MathUtils.degToRad(i));
-            }
+            //Mueve el viallano siempre y cuando la nave del villano va a la izquierda o derecha
+            model.position.x = dirVillain.left || dirVillain.right ? 10 * Math.cos(MathUtils.degToRad(i)) : model.position.x;
+            model.position.z = dirVillain.left || dirVillain.right ? 10 * Math.sin(MathUtils.degToRad(i)) : model.position.z;
 
-            //Calculate distance heroe and villain
+            //Obtiene la distancia entre el heroe y el villano
             let distancia = model.position.distanceTo(heroe.position);
 
-            if (distancia <= 5 && !dirVillain.shoot)
-                dirVillain.shoot = true;
+            //Si la distancia esta en el area del heroe y el villano no a disparado, disparar...
+            dirVillain.shoot = distancia <= 5 && !dirVillain.shoot && model.visible ? true : dirVillain.shoot;
 
-            if (dirVillain.shoot)
-                dirVillain.shootRecall += 0.01;
-            //Recorre la ristra de balas
+            //Si el villano a disparado, incrementar el retraso del siguiente disparo de la nave enemiga
+            dirVillain.shootRecall += dirVillain.shoot ? 0.01 : 0.0;
+
+            //Si el villano a disparado y el retradso de la bala esta completado...
             if (dirVillain.shoot && dirVillain.shootRecall >= 1)
+                //Recorre las balas del enemigo
                 bulletsVillain.map((bulletInfo) => {
-                    //Posiciona correctamente la bala, si no, se crea siempre en el origen
+                    //Si la bala esta recien creada
                     if (bulletInfo.recentCreated) {
+                        /*
+                        igualamos el contador de la posicion de la bala al contador de posicion de la nave,
+                        ponemos la bandera recien creada en falso para que ya no entre a este if,
+                        establecemos la variable de la bala que se esta moviendo,
+                        añadimos la bala a la escena...
+                        */
                         bulletInfo.count = i;
                         bulletInfo.recentCreated = false;
                         bulletInfo.onMovement = true;
@@ -210,25 +233,34 @@ function setupModelVillain(data, scene, dirVillain, heroe) {
 
                     //Valida si la bala esta en movimiento
                     if (bulletInfo.onMovement) {
+                        //Mueve la bala
                         bulletInfo.bullet.position.z = 10 * Math.sin(MathUtils.degToRad(bulletInfo.count));
                         bulletInfo.bullet.position.x = 10 * Math.cos(MathUtils.degToRad(bulletInfo.count));
+                        //Si la bala se mueve hacia arriba
                         if (bulletInfo.up)
                             bulletInfo.bullet.position.y += 0.01;
+                        //Si la bala se mueve hacia bajo
                         else if (bulletInfo.down)
                             bulletInfo.bullet.position.y -= 0.01;
 
-                        //Define la direccion de la bala
+                        //Incrementa o decrementa el cotnador de posicion de la bala si va a la derecha o a lzquierda
                         bulletInfo.count = bulletInfo.left ? bulletInfo.count + 0.3 : (bulletInfo.right ? bulletInfo.count - 0.3 : bulletInfo.count);
                         //Aumentar contador de grados de la bala
                         bulletInfo.countPosition = bulletInfo.left ? bulletInfo.countPosition + 0.3 : (bulletInfo.right ? bulletInfo.countPosition - 0.3 : bulletInfo.countPosition);
-                        //Eliminar bala cuando llegue a un limite
+
+                        /*
+                        Eliminar bala cuando llegue a un limite,
+                        establece la variable de movimiento de la bala en falso,
+                        remueve de la escena la bala,
+                        libera la geometria y material del modelo,
+                        establece la bala en null
+                        */
                         if (bulletInfo.left && bulletInfo.countPosition >= 100) {
                             bulletInfo.onMovement = false;
                             scene.remove(bulletInfo.bullet);
                             bulletInfo.bullet.geometry.dispose();
                             bulletInfo.bullet.material.dispose();
                             bulletInfo.bullet = null;
-
                         }
                         else if (bulletInfo.right && bulletInfo.countPosition <= -100) {
                             bulletInfo.onMovement = false;
@@ -236,45 +268,59 @@ function setupModelVillain(data, scene, dirVillain, heroe) {
                             bulletInfo.bullet.geometry.dispose();
                             bulletInfo.bullet.material.dispose();
                             bulletInfo.bullet = null;
-
                         }
 
-                        //Define el limite de grados de la bala
+                        //Define el limite de grados de la bala en los dos contadores
                         bulletInfo.count = bulletInfo.count >= 360 ? 0 : (bulletInfo.count <= -360 ? 0 : bulletInfo.count);
                         bulletInfo.countPosition = bulletInfo.countPosition >= 360 ? 0 : (bulletInfo.countPosition <= -360 ? 0 : bulletInfo.countPosition);
                     }
                 });
 
-            //Comprobar balas vacias
+            if (model.visible) {
+                //Obtiene las balas que estan actualmente en la escena del heroe
+                bullets = bullets.filter((bulletInfo) => bulletInfo.bullet !== null);
+                //Recorre el arreglo de las balas
+                bullets.map((bulletInfo) => {
+                    //Si la bala del heroe esta en movimiento
+                    if (bulletInfo.onMovement) {
+                        //Crea un box alrededor de la bala del heroe y del villano
+                        let boxBullet = new Box3().setFromObject(bulletInfo.bullet);
+                        let boxVillain = new Box3().setFromObject(model);
+
+                        //Si las cajas colisionan 
+                        if (boxBullet.intersectsBox(boxVillain)) {
+                            bulletInfo.onMovement = false;
+                            scene.remove(bulletInfo.bullet);
+                            bulletInfo.bullet.geometry.dispose();
+                            bulletInfo.bullet.material.dispose();
+                            bulletInfo.bullet = null;
+                            model.visible = false;
+                        }
+                        //Establece las cajas en null
+                        boxBullet = null;
+                        boxVillain = null;
+                    }
+                });
+            }
+
+            /*
+            Si no tiene balas la ristra del villano, 
+            establece la variable de balas en falso, 
+            establece el disparo del villano en falso, 
+            establece el arreglo de las balas en vacio
+            y establece el contador del shoot recall en 0
+           */
             const bulletsFIlter = bulletsVillain.filter((bulletInfo) => bulletInfo.bullet !== null);
+
             if (bulletsFIlter.length <= 0) {
+                scene.remove(!model.visible ? model : null);
                 dirVillain.bullets = false;
                 dirVillain.shoot = false;
                 bulletsVillain = [];
                 dirVillain.shootRecall = 0;
             }
 
-            //Process colisions
-            bullets = bullets.filter((bulletInfo) => bulletInfo.bullet !== null);
-            bullets.map((bulletInfo) => {
-                if (bulletInfo.onMovement) {
-                    let boxBullet = new Box3().setFromObject(bulletInfo.bullet);
-                    let boxVillain = new Box3().setFromObject(model);
-
-                    if (boxBullet.intersectsBox(boxVillain)) {
-                        scene.remove(model);
-                        bulletInfo.onMovement = false;
-                        scene.remove(bulletInfo.bullet);
-                        bulletInfo.bullet.geometry.dispose();
-                        bulletInfo.bullet.material.dispose();
-                        bulletInfo.bullet = null;
-                    }
-                    boxBullet = null;
-                    boxVillain = null;
-                }
-            });
-
-            //Control the i factor
+            //Controla los grados del contador de movimiento del villano
             i = i >= 360 ? 0 : (i <= -360 ? 0 : i);
         }
     }
