@@ -21,6 +21,8 @@ async function loadSpaceships(scene) {
     const dirVillain = {
         "left": true,
         "right": false,
+        "up": false,
+        "down": true,
         "shoot": false,
         "shootRecall": 0,
         "deleteAfterShoot": false,
