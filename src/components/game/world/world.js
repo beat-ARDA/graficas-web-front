@@ -39,10 +39,10 @@ class World {
         const { building } = await loadBuilding();
 
         //SpaceShips
-        const { spaceShipHeroe, spaceShipVillain } = await loadSpaceships(scene);
+        const { spaceShipHeroe, modelsVillains } = await loadSpaceships(scene);
 
-        loop.updatables.push(spaceShipVillain, spaceShipHeroe, building);
-        scene.add(spaceShipHeroe, spaceShipVillain, building);
+        loop.updatables.push(modelsVillains[0], modelsVillains[1], spaceShipHeroe, building);
+        scene.add(spaceShipHeroe, modelsVillains[0], modelsVillains[1], building);
     }
 
     start() {
