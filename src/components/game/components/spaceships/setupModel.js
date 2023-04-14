@@ -19,102 +19,134 @@ const dirHeroe = {
     "up": false
 };
 
-let bullets = [];
-
 function setupModelHeroe(data, villainModelsArray, scene) {
+    /*///////////////////////////////////////////////////////////////////////////////////////
+    /                                 Declaracion de variables                              /
+    /*///////////////////////////////////////////////////////////////////////////////////////
     const model = data.scene.children[0];
+    let bullets = [];
+    let indexBullets = [];
+    let indexVillains = [];
+    let countDegrees = 0;
 
-    let boxBullet = new Box3();
-    let boxVillain = new Box3();
-
-    let i = 0;
     model.tick = (delta) => {
-        //Mueve el hereo hacia arriba o hacia abajo
-        model.position.y = dirHeroe.down ? model.position.y - 0.1 : (
-            dirHeroe.up ? model.position.y + 0.1 : model.position.y);
-
-        //Incremeta la variable i dependiendo si el heroe va hacia la izquierda o derecha
-        i = dirHeroe.left ? i + 0.6 : (
-            dirHeroe.right ? i - 0.6 : i);
-
-        //Mueve el heroe hacia la derecha o hacia la izquierda
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        /                                 Movimiento Heroe                                      /
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        //Aumentar contador de grados
+        if (dirHeroe.left)
+            countDegrees += 0.6;
+        else if (dirHeroe.right)
+            countDegrees -= 0.6;
+        //Subir o bajar nave
+        if (dirHeroe.down)
+            model.position.y -= 0.1;
+        else if (dirHeroe.up)
+            model.position.y += 0.1;
+        //Rotar la nave
+        if (dirHeroe.right)
+            model.rotation.z = 10 * Math.sin(MathUtils.degToRad((180 + countDegrees) * 0.10));
+        else if (dirHeroe.left)
+            model.rotation.z = 10 * Math.sin(MathUtils.degToRad(countDegrees * 0.108));
+        //Mover heroe a la derecha o izquierda
         if (dirHeroe.left || dirHeroe.right) {
-            model.position.x = 10 * Math.cos(MathUtils.degToRad(i));
-            model.position.z = 10 * Math.sin(MathUtils.degToRad(i));
+            model.position.x = 10 * Math.cos(MathUtils.degToRad(countDegrees));
+            model.position.z = 10 * Math.sin(MathUtils.degToRad(countDegrees));
         }
+        //Restablecer contador de grados al llegar al limite
+        if (countDegrees >= 360)
+            countDegrees = 0;
+        else if (countDegrees <= -360)
+            countDegrees = 0;
 
-        //Movimiento de rotacion de la nave al moverse
-        model.rotation.z = dirHeroe.right ?
-            10 * Math.sin(MathUtils.degToRad((180 + i) * 0.10)) :
-            (dirHeroe.left ?
-                10 * Math.sin(MathUtils.degToRad(i * 0.108)) :
-                model.rotation.z);
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        /                                      Colisiones                                       /
+        /*///////////////////////////////////////////////////////////////////////////////////////
 
-        //Comprueba que las balas del heroe no estan vacias
-        bullets = bullets.filter((bulletInfo) => bulletInfo.bullet !== null);
+        bullets.map((bulletInfo, indexBullet) => {
+            const boxBullet = new Box3().setFromObject(bulletInfo.bullet);
+            villainModelsArray.map((villain, indexVillain) => {
+                const boxVillain = new Box3().setFromObject(villain);
 
-        //Recorre las balas
-        bullets.map((bulletInfo) => {
-            //Posiciona correctamente la bala, si no, se crea siempre en el origen
+                console.log(boxBullet.intersectsBox(boxVillain));
+                if (boxBullet.intersectsBox(boxVillain)) {
+                    indexBullets.push(indexBullet);
+                    indexVillains.push(indexVillain);
+                }
+            });
+        });
+
+        indexVillains.map(index => {
+            scene.remove(villainModelsArray[index]);
+            villainModelsArray[index] = null;
+            villainModelsArray.splice(index, 1);
+        });
+
+        indexVillains = [];
+
+        indexBullets.map(index => {
+            scene.remove(bullets[index].bullet);
+            bullets[index].bullet.geometry.dispose();
+            bullets[index].bullet.material.dispose();
+            bullets[index].bullet = null;
+            bullets.splice(index, 1);
+        });
+
+        indexBullets = [];
+
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        /                                    Disparos Heroe                                     /
+        /*///////////////////////////////////////////////////////////////////////////////////////
+
+        bullets.map((bulletInfo, index) => {
             if (bulletInfo.recentCreated) {
-                bulletInfo.count = i;
+                bulletInfo.count = countDegrees;
                 bulletInfo.recentCreated = false;
             }
 
-            //Valida si la bala esta en movimiento
-            if (bulletInfo.onMovement) {
-                //Se mueve la bala en base a su parametro de conteo
-                bulletInfo.bullet.position.z = 10 * Math.sin(MathUtils.degToRad(bulletInfo.count));
-                bulletInfo.bullet.position.x = 10 * Math.cos(MathUtils.degToRad(bulletInfo.count));
+            //Incrementar contador de grados de la bala
+            if (bulletInfo.left)
+                bulletInfo.count += 1.2;
+            else if (bulletInfo.right)
+                bulletInfo.count -= 1.2;
+            //Incrementar contador de grados secundario de la bala
+            if (bulletInfo.left)
+                bulletInfo.countPosition += 1.2;
+            else if (bulletInfo.right)
+                bulletInfo.countPosition -= 1.2;
+            //Mover bala 
+            bulletInfo.bullet.position.z = 10 * Math.sin(MathUtils.degToRad(bulletInfo.count));
+            bulletInfo.bullet.position.x = 10 * Math.cos(MathUtils.degToRad(bulletInfo.count));
+            //Establecer limites de movimiento
+            bulletInfo.count = bulletInfo.count >= 360 ? 0 : (bulletInfo.count <= -360 ? 0 : bulletInfo.count);
+            bulletInfo.countPosition = bulletInfo.countPosition >= 360 ? 0 : (bulletInfo.countPosition <= -360 ? 0 : bulletInfo.countPosition);
 
-                //Define la direccion de la bala
-                bulletInfo.count = bulletInfo.left ? bulletInfo.count + 1.2 : (bulletInfo.right ? bulletInfo.count - 1.2 : bulletInfo.count);
-                //Aumentar contador de grados de la bala
-                bulletInfo.countPosition = bulletInfo.left ? bulletInfo.countPosition + 1.2 : (bulletInfo.right ? bulletInfo.countPosition - 1.2 : bulletInfo.countPosition);
+            /*///////////////////////////////////////////////////////////////////////////////////////
+            /                               Establecer limites de la bala                           /
+            /*///////////////////////////////////////////////////////////////////////////////////////
 
-                // //Calcula si hubo colisione con la nave enemiga
-                // //Crea un box alrededor de la bala del heroe y del villano
-                boxBullet.setFromObject(bulletInfo.bullet);
-                villainModelsArray.map((villain) => {
-                    boxVillain.setFromObject(villain);
-                    //Si las cajas colisionan 
-                    if (boxBullet.intersectsBox(boxVillain)) {
-                        bulletInfo.onMovement = false;
-                        bulletInfo.countPosition = 0;
-                        scene.remove(bulletInfo.bullet);
-                        bulletInfo.bullet.geometry.dispose();
-                        bulletInfo.bullet.material.dispose();
-                        bulletInfo.bullet = null;
-                        villain.visible = false;
-                    }
-                });
-
-                //Eliminar bala cuando llegue a un limite
-                if (bulletInfo.left && bulletInfo.countPosition >= 100) {
-                    bulletInfo.onMovement = false;
-                    bulletInfo.countPosition = 0;
-                    scene.remove(bulletInfo.bullet);
-                    bulletInfo.bullet.geometry.dispose();
-                    bulletInfo.bullet.material.dispose();
-                    bulletInfo.bullet = null;
-                }
-                else if (bulletInfo.right && bulletInfo.countPosition <= -100) {
-                    bulletInfo.onMovement = false;
-                    bulletInfo.countPosition = 0;
-                    scene.remove(bulletInfo.bullet);
-                    bulletInfo.bullet.geometry.dispose();
-                    bulletInfo.bullet.material.dispose();
-                    bulletInfo.bullet = null;
-                }
-
-                //Define el limite de grados de la bala
-                bulletInfo.count = bulletInfo.count >= 360 ? 0 : (bulletInfo.count <= -360 ? 0 : bulletInfo.count);
-                bulletInfo.countPosition = bulletInfo.countPosition >= 360 ? 0 : (bulletInfo.countPosition <= -360 ? 0 : bulletInfo.countPosition);
+            //Eliminar bala cuando llegue a un limite
+            if (bulletInfo.left && bulletInfo.countPosition >= 100) {
+                indexBullets.push(index);
+                scene.remove(bulletInfo.bullet);
+                bulletInfo.bullet.geometry.dispose();
+                bulletInfo.bullet.material.dispose();
+                bulletInfo.bullet = null;
+            }
+            else if (bulletInfo.right && bulletInfo.countPosition <= -100) {
+                indexBullets.push(index);
+                scene.remove(bulletInfo.bullet);
+                bulletInfo.bullet.geometry.dispose();
+                bulletInfo.bullet.material.dispose();
+                bulletInfo.bullet = null;
             }
         });
 
-        //Control the i factor
-        i = i >= 360 ? 0 : (i <= -360 ? 0 : i);
+        indexBullets.map(index => {
+            bullets.splice(index, 1);
+        });
+
+        indexBullets = [];
     };
 
     let lastExecutionTime = 0;
@@ -188,27 +220,47 @@ function setupModelVillain(data, scene, dirVillain) {
     let countUpDown = model.position.y;
     let limiteUp = model.position.y + 2;
     let limiteDown = model.position.y - 2;
+
     model.tick = (delta) => {
+        /*////////////////////////////////////////////////////////////////////////////////////////
+        /                              Movimiento nave enemiga                                   /
+        /*///////////////////////////////////////////////////////////////////////////////////////*/
 
-        /*//////////////////////////////////////////////////////
-        /               Movimiento nave enemiga                /
-        ///////////////////////////////////////////////////////*/
-        countDegrees = dirVillain.left ? countDegrees + 0.2 : (
-            dirVillain.right ? countDegrees - 0.2 : countDegrees);
-
-        countUpDown += dirVillain.up ? 0.05 : 0.0;
-        countUpDown -= dirVillain.down ? 0.05 : 0.0;
-
-        dirVillain.up = countUpDown >= limiteUp ? false : dirVillain.up;
-        dirVillain.down = countUpDown >= limiteUp ? true : dirVillain.down;
-        dirVillain.up = countUpDown <= limiteDown ? true : dirVillain.up;
-        dirVillain.down = countUpDown <= limiteDown ? false : dirVillain.down;
-
+        //Aumenta los grados del movimiento de la nave
+        if (dirVillain.left)
+            countDegrees += 0.2;
+        else if (dirVillain.right)
+            countDegrees -= 0.2;
+        //Aumenta el contador de arriba abajo
+        if (dirVillain.up)
+            countUpDown += 0.05;
+        else if (dirVillain.down)
+            countUpDown -= 0.05;
+        //Restablece la direccion en el eje y
+        if (countUpDown >= limiteUp) {
+            dirVillain.up = false;
+            dirVillain.down = true;
+        }
+        else if (countUpDown <= limiteDown) {
+            dirVillain.up = true;
+            dirVillain.down = false;
+        }
+        //Mueve la nave
         model.position.x = 10 * Math.cos(MathUtils.degToRad(countDegrees));
         model.position.z = 10 * Math.sin(MathUtils.degToRad(countDegrees));
-        model.position.y = countUpDown;
+        //Restablece el contador de grados del movimiento de la nave
+        if (countDegrees >= 360)
+            countDegrees = 0;
+        else if (countDegrees <= -360)
+            countDegrees = 0;
 
-        countDegrees = countDegrees >= 360 ? 0 : (countDegrees <= -360 ? 0 : countDegrees);
+        /*////////////////////////////////////////////////////////////////////////////////////////
+        /                                 Colision bala heroe                                    /
+        /*///////////////////////////////////////////////////////////////////////////////////////*/
+
+        if (!model.visible) {
+            scene.remove(model);
+        }
 
 
         // //Obtener el modelo

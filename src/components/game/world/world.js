@@ -35,14 +35,15 @@ class World {
     }
 
     async init() {
-        //Buildings
         const { building } = await loadBuilding();
-
-        //SpaceShips
         const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene);
 
-        loop.updatables.push(villainModelsArray[0], villainModelsArray[1], spaceShipHeroe, building);
-        scene.add(spaceShipHeroe, villainModelsArray[0], villainModelsArray[1], building);
+        loop.updatables.push(spaceShipHeroe, building);
+        scene.add(spaceShipHeroe, building);
+        villainModelsArray.map(villain => {
+            loop.updatables.push(villain);
+            scene.add(villain);
+        });
     }
 
     start() {
