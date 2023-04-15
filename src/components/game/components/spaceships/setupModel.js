@@ -46,7 +46,7 @@ function setupModelHeroe(data, villainModelsArray, scene, socket) {
     action.play();
 
     model.tick = (delta) => {
-        //mixer.update(delta);
+        mixer.update(delta);
         /*///////////////////////////////////////////////////////////////////////////////////////
         /                                 Movimiento Heroe                                      /
         /*///////////////////////////////////////////////////////////////////////////////////////
@@ -367,8 +367,13 @@ function setupModelVillain(data, scene, dirVillain) {
     let countUpDown = model.position.y;
     let limiteUp = model.position.y + 2;
     let limiteDown = model.position.y - 2;
+    const clip = data.animations[0];
+    const mixer = new AnimationMixer(model);
+    const action = mixer.clipAction(clip);
+    action.play();
 
     model.tick = (delta) => {
+        mixer.update(delta);
         /*////////////////////////////////////////////////////////////////////////////////////////
         /                              Movimiento nave enemiga                                   /
         /*///////////////////////////////////////////////////////////////////////////////////////*/

@@ -40,9 +40,9 @@ async function loadSpaceships(scene) {
     });
 
     let villainModelsArray = [];
-    const heroeData = await loader.loadAsync('/models/Nave1.glb');
+    const heroeData = await loader.loadAsync('/models/Parrot.glb');
     const player2Data = await loader.loadAsync('/models/Flamingo.glb');
-    const villainsData = await createModels(4, '/models/NaveVillanoTest.glb', false, true);
+    const villainsData = await createModels(4, '/models/Stork.glb', false, true);
 
     villainsData.map((villain, index) => {
         let separator = 0;
