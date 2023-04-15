@@ -1,6 +1,7 @@
 import { MathUtils } from "three";
 import { createBullet } from "./bullets/bullets";
 import { Box3 } from "three";
+import { AnimationMixer } from 'three';
 
 const keyboards = {
     "w": 87,
@@ -19,7 +20,16 @@ const dirHeroe = {
     "up": false
 };
 
-function setupModelHeroe(data, villainModelsArray, scene) {
+const dirPlayer2 = {
+    "left": false,
+    "right": false,
+    "viewLeft": false,
+    "viewRight": true,
+    "down": false,
+    "up": false
+};
+
+function setupModelHeroe(data, villainModelsArray, scene, socket) {
     /*///////////////////////////////////////////////////////////////////////////////////////
     /                                 Declaracion de variables                              /
     /*///////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +39,14 @@ function setupModelHeroe(data, villainModelsArray, scene) {
     let indexVillains = [];
     let countDegrees = 0;
 
+    const clip = data.animations[0];
+
+    const mixer = new AnimationMixer(model);
+    const action = mixer.clipAction(clip);
+    action.play();
+
     model.tick = (delta) => {
+        //mixer.update(delta);
         /*///////////////////////////////////////////////////////////////////////////////////////
         /                                 Movimiento Heroe                                      /
         /*///////////////////////////////////////////////////////////////////////////////////////
@@ -154,17 +171,23 @@ function setupModelHeroe(data, villainModelsArray, scene) {
         const now = Date.now();
 
         if (keyCode === keyboards.a) {
+            socket.emit('moveLeft', localStorage.getItem('socketId'));
             dirHeroe.left = true;
             dirHeroe.viewLeft = true;
             dirHeroe.viewRight = false;
         } else if (keyCode === keyboards.d) {
+            socket.emit('moveRight', localStorage.getItem('socketId'));
             dirHeroe.right = true;
             dirHeroe.viewLeft = false;
             dirHeroe.viewRight = true;
-        } else if (keyCode === keyboards.w)
+        } else if (keyCode === keyboards.w) {
+            socket.emit('moveUp', localStorage.getItem('socketId'));
             dirHeroe.up = true;
-        else if (keyCode === keyboards.s)
+        }
+        else if (keyCode === keyboards.s) {
+            socket.emit('moveDown', localStorage.getItem('socketId'));
             dirHeroe.down = true;
+        }
 
         if (now - lastExecutionTime >= 100) {
             if (keyCode === keyboards.space) {
@@ -192,19 +215,144 @@ function setupModelHeroe(data, villainModelsArray, scene) {
     async function onHeoreStop(event) {
         var keyCode = event.which;
 
-        if (keyCode === keyboards.w)
+        if (keyCode === keyboards.w) {
+            socket.emit('moveLeaveUp', localStorage.getItem('socketId'));
             dirHeroe.up = false;
-        else if (keyCode === keyboards.s)
+        }
+        else if (keyCode === keyboards.s) {
+            socket.emit('moveLeaveDown', localStorage.getItem('socketId'));
             dirHeroe.down = false;
-        else if (keyCode === keyboards.a)
+        }
+        else if (keyCode === keyboards.a) {
+            socket.emit('moveLeaveLeft', localStorage.getItem('socketId'));
             dirHeroe.left = false;
-        else if (keyCode === keyboards.d)
+        }
+        else if (keyCode === keyboards.d) {
+            socket.emit('moveLeaveRight', localStorage.getItem('socketId'));
             dirHeroe.right = false;
+        }
 
     };
 
     document.addEventListener("keydown", onHeroeMove, false);
     document.addEventListener("keyup", onHeoreStop, false);
+
+    return model;
+}
+
+function setupModelPlayer2(data, scene, socket) {
+    /*///////////////////////////////////////////////////////////////////////////////////////
+    /                                 Declaracion de variables                              /
+    /*///////////////////////////////////////////////////////////////////////////////////////
+    const model = data.scene.children[0];
+    const clip = data.animations[0];
+    const mixer = new AnimationMixer(model);
+    const action = mixer.clipAction(clip);
+    let countDegrees = 0;
+    action.play();
+
+    model.tick = (delta) => {
+        mixer.update(delta);
+        onPlayer2Move();
+        onPlayer2Stop();
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        /                                 Movimiento Player 2                                   /
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        //Aumentar contador de grados
+        if (dirPlayer2.left)
+            countDegrees += 0.6;
+        else if (dirPlayer2.right)
+            countDegrees -= 0.6;
+        //Subir o bajar nave
+        if (dirPlayer2.down)
+            model.position.y -= 0.1;
+        else if (dirPlayer2.up)
+            model.position.y += 0.1;
+        //Rotar la nave
+        if (dirPlayer2.right)
+            model.rotation.y = -10 * Math.sin(MathUtils.degToRad((180 + countDegrees) * 0.102));
+        else if (dirPlayer2.left)
+            model.rotation.y = -10 * Math.sin(MathUtils.degToRad(countDegrees * 0.108));
+        //Mover heroe a la derecha o izquierda
+        if (dirPlayer2.left || dirPlayer2.right) {
+            model.position.x = 10 * Math.cos(MathUtils.degToRad(countDegrees));
+            model.position.z = 10 * Math.sin(MathUtils.degToRad(countDegrees));
+        }
+        //Restablecer contador de grados al llegar al limite
+        if (countDegrees >= 360)
+            countDegrees = 0;
+        else if (countDegrees <= -360)
+            countDegrees = 0;
+    };
+
+    function onPlayer2Move() {
+        const moveLeft = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId'))
+                dirPlayer2.left = true;
+            socket.removeListener('moveLeft', moveLeft);
+        }
+
+        socket.on('moveLeft', moveLeft);
+
+        const moveRight = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId')) {
+                dirPlayer2.right = true;
+            }
+            socket.removeListener('moveRight', moveRight);
+        }
+
+        socket.on('moveRight', moveRight);
+
+        const moveUp = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId'))
+                dirPlayer2.up = true;
+            socket.removeListener('moveUp', moveUp);
+        }
+
+        socket.on('moveUp', moveUp);
+
+        const moveDown = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId'))
+                dirPlayer2.down = true;
+            socket.removeListener('moveDown', moveDown);
+        }
+
+        socket.on('moveDown', moveDown);
+    }
+
+    function onPlayer2Stop() {
+        const moveLeaveLeft = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId'))
+                dirPlayer2.left = false;
+            socket.removeListener('moveLeaveLeft', moveLeaveLeft);
+        }
+
+        socket.on('moveLeaveLeft', moveLeaveLeft);
+
+        const moveLeaveRight = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId'))
+                dirPlayer2.right = false;
+            socket.removeListener('moveLeaveRight', moveLeaveRight);
+        }
+
+        socket.on('moveLeaveRight', moveLeaveRight);
+
+        const moveLeaveUp = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId'))
+                dirPlayer2.up = false;
+            socket.removeListener('moveLeaveUp', moveLeaveUp);
+        }
+
+        socket.on('moveLeaveUp', moveLeaveUp);
+
+        const moveLeaveDown = (socketId) => {
+            if (socketId !== localStorage.getItem('socketId'))
+                dirPlayer2.down = false;
+            socket.removeListener('moveLeaveDown', moveLeaveDown);
+        }
+
+        socket.on('moveLeaveDown', moveLeaveDown);
+    };
 
     return model;
 }
@@ -483,4 +631,4 @@ function setupModelVillain(data, scene, dirVillain) {
     return model;
 }
 
-export { setupModelHeroe, setupModelVillain };
+export { setupModelHeroe, setupModelVillain, setupModelPlayer2 };

@@ -36,10 +36,10 @@ class World {
 
     async init() {
         const { building } = await loadBuilding();
-        const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene);
+        const { spaceShipHeroe, villainModelsArray, spaceShipPlayer2 } = await loadSpaceships(scene);
 
-        loop.updatables.push(spaceShipHeroe, building);
-        scene.add(spaceShipHeroe, building);
+        loop.updatables.push(spaceShipHeroe, building, spaceShipPlayer2);
+        scene.add(spaceShipHeroe, building, spaceShipPlayer2);
         villainModelsArray.map(villain => {
             loop.updatables.push(villain);
             scene.add(villain);

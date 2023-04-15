@@ -1,6 +1,7 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { setupModelHeroe, setupModelVillain } from './setupModel';
+import { setupModelHeroe, setupModelVillain, setupModelPlayer2 } from './setupModel';
 import { MathUtils } from 'three';
+import socketIO from 'socket.io-client';
 
 const loader = new GLTFLoader();
 
@@ -26,13 +27,22 @@ async function createModels(count, pathModel, left = true, right = false) {
             "bullets": false
         });
     }
+
     return await Promise.all(loadersModels);
 }
 
 async function loadSpaceships(scene) {
+    const socket = socketIO.connect('http://localhost:4000');
+
+    socket.on('socketId', (socketId) => {
+        localStorage.setItem('socketId', socketId);
+        socket.removeListener('socketId');
+    });
+
     let villainModelsArray = [];
-    const heroeData = await loader.loadAsync('/models/heroe.glb');
-    const villainsData = await createModels(4, '/models/nave2corregida.glb', false, true);
+    const heroeData = await loader.loadAsync('/models/Nave1.glb');
+    const player2Data = await loader.loadAsync('/models/Flamingo.glb');
+    const villainsData = await createModels(4, '/models/NaveVillanoTest.glb', false, true);
 
     villainsData.map((villain, index) => {
         let separator = 0;
@@ -56,12 +66,18 @@ async function loadSpaceships(scene) {
     });
 
     //Heroe
-    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene);
+    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, socket);
     spaceShipHeroe.position.set(10, 0, 0);
     spaceShipHeroe.scale.set(0.1, 0.1, 0.1);
     spaceShipHeroe.rotation.y = MathUtils.degToRad(180);
 
-    return { spaceShipHeroe, villainModelsArray };
+    //Player2
+    const spaceShipPlayer2 = setupModelPlayer2(player2Data, scene, socket);
+    spaceShipPlayer2.position.set(10, 2, 0);
+    spaceShipPlayer2.scale.set(0.1, 0.1, 0.1);
+    spaceShipPlayer2.rotation.y = MathUtils.degToRad(180);
+
+    return { spaceShipHeroe, villainModelsArray, spaceShipPlayer2 };
 }
 
 export { loadSpaceships };
