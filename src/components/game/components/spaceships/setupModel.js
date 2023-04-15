@@ -45,9 +45,9 @@ function setupModelHeroe(data, villainModelsArray, scene) {
             model.position.y += 0.1;
         //Rotar la nave
         if (dirHeroe.right)
-            model.rotation.z = 10 * Math.sin(MathUtils.degToRad((180 + countDegrees) * 0.10));
+            model.rotation.y = -10 * Math.sin(MathUtils.degToRad((180 + countDegrees) * 0.102));
         else if (dirHeroe.left)
-            model.rotation.z = 10 * Math.sin(MathUtils.degToRad(countDegrees * 0.108));
+            model.rotation.y = -10 * Math.sin(MathUtils.degToRad(countDegrees * 0.108));
         //Mover heroe a la derecha o izquierda
         if (dirHeroe.left || dirHeroe.right) {
             model.position.x = 10 * Math.cos(MathUtils.degToRad(countDegrees));
@@ -63,28 +63,27 @@ function setupModelHeroe(data, villainModelsArray, scene) {
         /                                      Colisiones                                       /
         /*///////////////////////////////////////////////////////////////////////////////////////
 
-        bullets.map((bulletInfo, indexBullet) => {
+        bullets.forEach((bulletInfo, indexBullet) => {
             const boxBullet = new Box3().setFromObject(bulletInfo.bullet);
-            villainModelsArray.map((villain, indexVillain) => {
+            villainModelsArray.forEach((villain, indexVillain) => {
                 const boxVillain = new Box3().setFromObject(villain);
 
-                console.log(boxBullet.intersectsBox(boxVillain));
                 if (boxBullet.intersectsBox(boxVillain)) {
                     indexBullets.push(indexBullet);
                     indexVillains.push(indexVillain);
                 }
             });
         });
-
-        indexVillains.map(index => {
+        //Elimina los villanos colisionados
+        indexVillains.forEach(index => {
             scene.remove(villainModelsArray[index]);
             villainModelsArray[index] = null;
             villainModelsArray.splice(index, 1);
         });
 
         indexVillains = [];
-
-        indexBullets.map(index => {
+        //Elimina las balas colisionadas
+        indexBullets.forEach(index => {
             scene.remove(bullets[index].bullet);
             bullets[index].bullet.geometry.dispose();
             bullets[index].bullet.material.dispose();
@@ -98,7 +97,7 @@ function setupModelHeroe(data, villainModelsArray, scene) {
         /                                    Disparos Heroe                                     /
         /*///////////////////////////////////////////////////////////////////////////////////////
 
-        bullets.map((bulletInfo, index) => {
+        bullets.forEach((bulletInfo, index) => {
             if (bulletInfo.recentCreated) {
                 bulletInfo.count = countDegrees;
                 bulletInfo.recentCreated = false;
@@ -141,8 +140,8 @@ function setupModelHeroe(data, villainModelsArray, scene) {
                 bulletInfo.bullet = null;
             }
         });
-
-        indexBullets.map(index => {
+        //Elima las balas que llegaron al limite
+        indexBullets.forEach(index => {
             bullets.splice(index, 1);
         });
 
@@ -254,13 +253,40 @@ function setupModelVillain(data, scene, dirVillain) {
         else if (countDegrees <= -360)
             countDegrees = 0;
 
-        /*////////////////////////////////////////////////////////////////////////////////////////
-        /                                 Colision bala heroe                                    /
+        /*/////////////////////////////////////////////////////////////////////////////////////////
+        /                                 Movimiento balas villano                                /
         /*///////////////////////////////////////////////////////////////////////////////////////*/
 
-        if (!model.visible) {
-            scene.remove(model);
-        }
+        // //Cargar balas
+        // if (bulletsVillain.length < 0)
+        //     for (let i = 0; i < 3; i++)
+        //         bulletsVillain.push({
+        //             "toLeft": dirVillain.left,
+        //             "toRight": dirVillain.right,
+        //             "bullet": createBullet(model),
+        //             "recentCreated": true,
+        //             "onMovement": true,
+        //             // "count": 0,
+        //             // "countPosition": 0,
+        //             // "velocity": 1,
+        //             // "up": directions[o].up,
+        //             // "down": directions[o].down,
+        //             // "rect": directions[o].rect,
+        //         });
+
+        // if (dirVillain.shoot)
+        //     bulletsVillain.forEach((bulletInfo, indexBullet) => {
+        //         if (bulletInfo.recentCreated) {
+        //             bulletInfo.count = countDegrees;
+        //             bulletInfo.recentCreated = false;
+        //             bulletInfo.onMovement = true;
+        //             scene.add(bulletInfo.bullet);
+        //         }
+
+        //         bulletInfo.bullet.position.z = 10 * Math.sin(MathUtils.degToRad(bulletInfo.count));
+        //         bulletInfo.bullet.position.x = 10 * Math.cos(MathUtils.degToRad(bulletInfo.count));
+        //     });
+
 
 
         // //Obtener el modelo

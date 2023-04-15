@@ -31,8 +31,8 @@ async function createModels(count, pathModel, left = true, right = false) {
 
 async function loadSpaceships(scene) {
     let villainModelsArray = [];
-    const heroeData = await loader.loadAsync('/models/Nave.glb');
-    const villainsData = await createModels(4, '/models/NaveVillanoTest.glb', false, true);
+    const heroeData = await loader.loadAsync('/models/heroe.glb');
+    const villainsData = await createModels(4, '/models/nave2corregida.glb', false, true);
 
     villainsData.map((villain, index) => {
         let separator = 0;
@@ -59,8 +59,7 @@ async function loadSpaceships(scene) {
     const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene);
     spaceShipHeroe.position.set(10, 0, 0);
     spaceShipHeroe.scale.set(0.1, 0.1, 0.1);
-    spaceShipHeroe.rotation.x = MathUtils.degToRad(90);
-    spaceShipHeroe.rotation.z = MathUtils.degToRad(180);
+    spaceShipHeroe.rotation.y = MathUtils.degToRad(180);
 
     return { spaceShipHeroe, villainModelsArray };
 }
