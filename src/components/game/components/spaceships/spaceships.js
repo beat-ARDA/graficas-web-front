@@ -1,7 +1,6 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { setupModelHeroe, setupModelVillain, setupModelPlayer2 } from './setupModel';
+import { setupModelHeroe, setupModelVillain } from './setupModel';
 import { MathUtils } from 'three';
-import socketIO from 'socket.io-client';
 
 const loader = new GLTFLoader();
 
@@ -23,7 +22,10 @@ async function createModels(count, pathModel, left = true, right = false) {
             "down": false,
             "shoot": false,
             "shootRecall": 0,
+            "velocityShootRecall": 0.08,
+            "limitShootRecall": 15,
             "deleteAfterShoot": false,
+            "exists": true,
             "bullets": false
         });
     }
@@ -32,19 +34,11 @@ async function createModels(count, pathModel, left = true, right = false) {
 }
 
 async function loadSpaceships(scene) {
-    const socket = socketIO.connect('http://localhost:4000');
-
-    socket.on('socketId', (socketId) => {
-        localStorage.setItem('socketId', socketId);
-        socket.removeListener('socketId');
-    });
-
     let villainModelsArray = [];
     const heroeData = await loader.loadAsync('/models/Parrot.glb');
-    const player2Data = await loader.loadAsync('/models/Flamingo.glb');
     const villainsData = await createModels(4, '/models/Stork.glb', false, true);
 
-    villainsData.map((villain, index) => {
+    villainsData.forEach((villain, index) => {
         let separator = 0;
 
         if (villainsData.length % 2 === 0) {
@@ -66,18 +60,12 @@ async function loadSpaceships(scene) {
     });
 
     //Heroe
-    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, socket);
+    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, dirVillainArray);
     spaceShipHeroe.position.set(10, 0, 0);
     spaceShipHeroe.scale.set(0.1, 0.1, 0.1);
     spaceShipHeroe.rotation.y = MathUtils.degToRad(180);
 
-    //Player2
-    const spaceShipPlayer2 = setupModelPlayer2(player2Data, scene, socket);
-    spaceShipPlayer2.position.set(10, 2, 0);
-    spaceShipPlayer2.scale.set(0.1, 0.1, 0.1);
-    spaceShipPlayer2.rotation.y = MathUtils.degToRad(180);
-
-    return { spaceShipHeroe, villainModelsArray, spaceShipPlayer2 };
+    return { spaceShipHeroe, villainModelsArray };
 }
 
 export { loadSpaceships };
