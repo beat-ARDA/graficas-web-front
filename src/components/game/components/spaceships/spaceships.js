@@ -7,6 +7,7 @@ const loader = new GLTFLoader();
 const dirVillainArray = [];
 
 async function createModels(count, pathModel, left = true, right = false) {
+    
     if (left && right)
         right = false;
     else if (!left && !right)

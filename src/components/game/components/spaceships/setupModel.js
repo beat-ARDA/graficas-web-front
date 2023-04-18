@@ -12,6 +12,7 @@ const keyboards = {
 }
 
 const dirHeroe = {
+    "lifes": 3,
     "left": false,
     "right": false,
     "viewLeft": false,
@@ -71,26 +72,28 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
         /                                      Colisiones                                       /
         /*///////////////////////////////////////////////////////////////////////////////////////
 
-        bullets.forEach((bulletInfo, indexBullet) => {
-            const boxBullet = new Box3().setFromObject(bulletInfo.bullet);
-            villainModelsArray.forEach((villain, indexVillain) => {
-                const boxVillain = new Box3().setFromObject(villain);
-
+        bullets.forEach((bulletInfo) => {
+            let boxBullet = new Box3().setFromObject(bulletInfo.bullet);
+            villainModelsArray.forEach((villain) => {
+                let boxVillain = new Box3().setFromObject(villain);
                 if (boxBullet.intersectsBox(boxVillain)) {
-                    indexBullets.push(indexBullet);
-                    indexVillains.push(indexVillain);
+                    indexBullets.push(bullets.indexOf(bulletInfo));
+                    indexVillains.push(villainModelsArray.indexOf(villain));
+                    console.log(villain);
                 }
             });
         });
+
         //Elimina los villanos colisionados
         indexVillains.forEach(index => {
             dirVillainArray[index].exists = false;
             scene.remove(villainModelsArray[index]);
             villainModelsArray[index] = null;
-            villainModelsArray.splice(index, 1);
+            //villainModelsArray.splice(index, 1);
         });
 
         indexVillains = [];
+
         //Elimina las balas colisionadas
         indexBullets.forEach(index => {
             scene.remove(bullets[index].bullet);
@@ -134,23 +137,18 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
             /*///////////////////////////////////////////////////////////////////////////////////////
 
             //Eliminar bala cuando llegue a un limite
-            if (bulletInfo.left && bulletInfo.countPosition >= 100) {
+            if (bulletInfo.left && bulletInfo.countPosition >= 100)
                 indexBullets.push(index);
-                scene.remove(bulletInfo.bullet);
-                bulletInfo.bullet.geometry.dispose();
-                bulletInfo.bullet.material.dispose();
-                bulletInfo.bullet = null;
-            }
-            else if (bulletInfo.right && bulletInfo.countPosition <= -100) {
+            else if (bulletInfo.right && bulletInfo.countPosition <= -100)
                 indexBullets.push(index);
-                scene.remove(bulletInfo.bullet);
-                bulletInfo.bullet.geometry.dispose();
-                bulletInfo.bullet.material.dispose();
-                bulletInfo.bullet = null;
-            }
         });
+
         //Elima las balas que llegaron al limite
         indexBullets.forEach(index => {
+            scene.remove(bullets[index].bullet);
+            bullets[index].bullet.geometry.dispose();
+            bullets[index].bullet.material.dispose();
+            bullets[index].bullet = null;
             bullets.splice(index, 1);
         });
 
@@ -288,7 +286,8 @@ function setupModelVillain(data, scene, dirVillain) {
         }
 
         //Aumentar el atraso del disparo
-        dirVillain.shootRecall += dirVillain.velocityShootRecall;
+        if (dirVillain.exists)
+            dirVillain.shootRecall += dirVillain.velocityShootRecall;
 
         //Si el shoot recall llega al limite dispara
         if (dirVillain.shootRecall >= dirVillain.limitShootRecall)
