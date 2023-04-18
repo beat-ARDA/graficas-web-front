@@ -40,7 +40,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
     model.tick = (delta) => {
         //mixer.update(delta);
         /*///////////////////////////////////////////////////////////////////////////////////////
-        /                                 Movimiento Heroe                                      /
+        /                                     Movimiento Heroe                                  /
         /*///////////////////////////////////////////////////////////////////////////////////////
         //Aumentar contador de grados
         if (dirHeroe.left)
@@ -79,7 +79,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
                 if (boxBullet.intersectsBox(boxVillain)) {
                     indexBullets.push(bullets.indexOf(bulletInfo));
                     indexVillains.push(villainModelsArray.indexOf(villain));
-                    console.log(villain);
+                    console.log(villainModelsArray.indexOf(villain));
                 }
             });
         });
@@ -88,7 +88,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
         indexVillains.forEach(index => {
             dirVillainArray[index].exists = false;
             scene.remove(villainModelsArray[index]);
-            villainModelsArray[index] = null;
+            delete(villainModelsArray[index]);
             //villainModelsArray.splice(index, 1);
         });
 
