@@ -27,14 +27,15 @@ async function createModels(count, pathModel, left = true, right = false) {
             "limitShootRecall": 15,
             "deleteAfterShoot": false,
             "exists": true,
-            "bullets": false
+            "bullets": false,
+            "bulletsInSpaceship": 1
         });
     }
 
     return await Promise.all(loadersModels);
 }
 
-async function loadSpaceships(scene) {
+async function loadSpaceships(scene, loop) {
     let villainModelsArray = [];
     const heroeData = await loader.loadAsync('/models/Parrot.glb');
     const villainsData = await createModels(4, '/models/Stork.glb', false, true);
@@ -55,13 +56,13 @@ async function loadSpaceships(scene) {
         else if (dirVillainArray[index].left)
             villain.scene.children[0].rotation.y = MathUtils.degToRad(-90);
         villain.scene.children[0].name = 'villain' + index;
-        const spaceShipVillain = setupModelVillain(villain, scene, dirVillainArray[index]);
+        const spaceShipVillain = setupModelVillain(villain, scene, dirVillainArray[index], loop);
 
         villainModelsArray.push(spaceShipVillain);
     });
 
     //Heroe
-    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, dirVillainArray);
+    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, dirVillainArray, loop);
     spaceShipHeroe.position.set(10, 0, 0);
     spaceShipHeroe.scale.set(0.1, 0.1, 0.1);
     spaceShipHeroe.rotation.y = MathUtils.degToRad(180);

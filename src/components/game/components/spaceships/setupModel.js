@@ -21,7 +21,7 @@ const dirHeroe = {
     "up": false
 };
 
-function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
+function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop) {
     /*///////////////////////////////////////////////////////////////////////////////////////
     /                                 Declaracion de variables                              /
     /*///////////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +72,32 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
         /                                      Colisiones                                       /
         /*///////////////////////////////////////////////////////////////////////////////////////
 
+        //Heroe colision con villano
+        villainModelsArray.forEach((villain) => {
+            let boxHeroe = new Box3().setFromObject(model);
+            let boxVillain = new Box3().setFromObject(villain);
+            if (boxHeroe.intersectsBox(boxVillain)) {
+                indexVillains.push(villainModelsArray.indexOf(villain));
+                dirHeroe.lifes -= 1;
+                if (dirHeroe.lifes === 0) {
+                    scene.remove(model);
+                    document.removeEventListener("keydown", onHeroeMove, false);
+                    document.removeEventListener("keyup", onHeoreStop, false);
+                    loop.stop();
+                }
+            }
+        });
+
+        //Elimina los villanos colisionados
+        indexVillains.forEach(index => {
+            dirVillainArray[index].exists = false;
+            scene.remove(villainModelsArray[index]);
+            delete (villainModelsArray[index]);
+        });
+
+        indexVillains = [];
+
+        //Balas heroe con villanos
         bullets.forEach((bulletInfo) => {
             let boxBullet = new Box3().setFromObject(bulletInfo.bullet);
             villainModelsArray.forEach((villain) => {
@@ -79,7 +105,6 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
                 if (boxBullet.intersectsBox(boxVillain)) {
                     indexBullets.push(bullets.indexOf(bulletInfo));
                     indexVillains.push(villainModelsArray.indexOf(villain));
-                    console.log(villainModelsArray.indexOf(villain));
                 }
             });
         });
@@ -88,8 +113,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
         indexVillains.forEach(index => {
             dirVillainArray[index].exists = false;
             scene.remove(villainModelsArray[index]);
-            delete(villainModelsArray[index]);
-            //villainModelsArray.splice(index, 1);
+            delete (villainModelsArray[index]);
         });
 
         indexVillains = [];
@@ -214,7 +238,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray) {
     return model;
 }
 
-function setupModelVillain(data, scene, dirVillain) {
+function setupModelVillain(data, scene, dirVillain, loop) {
     /*//////////////////////////////////////////////////////
     /               Definicion de variables                /
     ///////////////////////////////////////////////////////*/
@@ -231,7 +255,6 @@ function setupModelVillain(data, scene, dirVillain) {
     // action.play();
 
     model.tick = (delta) => {
-
         //mixer.update(delta);
         /*////////////////////////////////////////////////////////////////////////////////////////
         /                                 Movimiento nave enemiga                                /
@@ -271,7 +294,7 @@ function setupModelVillain(data, scene, dirVillain) {
 
         //Crear balas
         if (!dirVillain.bullets) {
-            for (let i = 0; i < 3; i++)
+            for (let i = 0; i < dirVillain.bulletsInSpaceship; i++)
                 bulletsVillain.push({
                     "left": dirVillain.left,
                     "right": dirVillain.right,
@@ -339,15 +362,24 @@ function setupModelVillain(data, scene, dirVillain) {
                 }
             });
 
-            if (indexBulletsVillain.length === 3) {
+            if (indexBulletsVillain.length === dirVillain.bulletsInSpaceship) {
                 bulletsVillain = [];
                 indexBulletsVillain = [];
                 dirVillain.shoot = false;
                 dirVillain.bullets = false;
                 dirVillain.shootRecall = 0;
+                //Si y se destruyeron las tres y el modelo a sido destruido elimina tambien del loop
+                if (!dirVillain.exists) {
+                    console.log(loop.updatables);
+                    loop.updatables.splice(loop.updatables.indexOf(model), 1);
+                }
             }
         }
 
+        if (!dirVillain.exists && !dirVillain.shoot) {
+            loop.updatables.splice(loop.updatables.indexOf(model), 1);
+            console.log(loop.updatables);
+        }
     }
 
     return model;
