@@ -16,7 +16,6 @@ let loop;
 
 class World {
     constructor(container) {
-
         camera = createCamera();
         scene = createScene();
         renderer = createRenderer();
@@ -37,11 +36,17 @@ class World {
     async init() {
         const { building } = await loadBuilding();
         const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene, loop);
+
         loop.updatables.push(spaceShipHeroe, building);
         scene.add(spaceShipHeroe, building);
-        villainModelsArray.forEach(villain => {
+
+        //Level 1 OnePlayer
+
+        villainModelsArray.forEach((villain, indexVillain) => {
             loop.updatables.push(villain);
-            scene.add(villain);
+            if (indexVillain <= 2)
+                scene.add(villain);
+
         });
     }
 

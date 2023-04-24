@@ -7,7 +7,7 @@ const loader = new GLTFLoader();
 const dirVillainArray = [];
 
 async function createModels(count, pathModel, left = true, right = false) {
-    
+
     if (left && right)
         right = false;
     else if (!left && !right)
@@ -28,7 +28,9 @@ async function createModels(count, pathModel, left = true, right = false) {
             "deleteAfterShoot": false,
             "exists": true,
             "bullets": false,
-            "bulletsInSpaceship": 1
+            "bulletsInSpaceship": 1,
+            "runTick": false,
+            "created": false
         });
     }
 
@@ -36,9 +38,17 @@ async function createModels(count, pathModel, left = true, right = false) {
 }
 
 async function loadSpaceships(scene, loop) {
+    let level = 3;
+    let countLevel = 0;
+    let distanceObjects = 10;
+    let _countDegreesVillains = 180;
+    let _countDegreesHeroe = 90;
     let villainModelsArray = [];
+    for (let l = 1; l < level + 1; l++)
+        countLevel += (3 * l);
+        
     const heroeData = await loader.loadAsync('/models/Parrot.glb');
-    const villainsData = await createModels(4, '/models/Stork.glb', false, true);
+    const villainsData = await createModels(countLevel, '/models/Stork.glb', true, false);
 
     villainsData.forEach((villain, index) => {
         let separator = 0;
@@ -49,23 +59,30 @@ async function loadSpaceships(scene, loop) {
             separator = 1;
         }
 
-        villain.scene.children[0].position.set(0, (index * 1) - separator, 10);
+        villain.scene.children[0].position.x = distanceObjects * Math.cos(MathUtils.degToRad(_countDegreesVillains));
+        villain.scene.children[0].position.z = distanceObjects * Math.sin(MathUtils.degToRad(_countDegreesVillains));
+        villain.scene.children[0].position.y = (index * 1) - separator;
         villain.scene.children[0].scale.set(0.1, 0.1, 0.1);
+
+        //villain.scene.children[0].position.set(10, (index * 1) - separator, 0);
         if (dirVillainArray[index].right)
             villain.scene.children[0].rotation.y = MathUtils.degToRad(90);
         else if (dirVillainArray[index].left)
             villain.scene.children[0].rotation.y = MathUtils.degToRad(-90);
         villain.scene.children[0].name = 'villain' + index;
-        const spaceShipVillain = setupModelVillain(villain, scene, dirVillainArray[index], loop);
+        const spaceShipVillain = setupModelVillain(villain, scene, dirVillainArray[index], loop, _countDegreesVillains, distanceObjects);
 
         villainModelsArray.push(spaceShipVillain);
     });
 
     //Heroe
-    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, dirVillainArray, loop);
-    spaceShipHeroe.position.set(10, 0, 0);
-    spaceShipHeroe.scale.set(0.1, 0.1, 0.1);
-    spaceShipHeroe.rotation.y = MathUtils.degToRad(180);
+    heroeData.scene.children[0].position.x = distanceObjects * Math.cos(MathUtils.degToRad(_countDegreesHeroe));
+    heroeData.scene.children[0].position.z = distanceObjects * Math.sin(MathUtils.degToRad(_countDegreesHeroe));
+    heroeData.scene.children[0].position.y = 0;
+    heroeData.scene.children[0].scale.set(0.1, 0.1, 0.1);
+    heroeData.scene.children[0].rotation.y = MathUtils.degToRad(180);
+    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, dirVillainArray, loop, _countDegreesHeroe, distanceObjects);
+    //spaceShipHeroe.position.set(10, 0, 0);
 
     return { spaceShipHeroe, villainModelsArray };
 }

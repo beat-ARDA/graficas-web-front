@@ -18,10 +18,15 @@ const dirHeroe = {
     "viewLeft": false,
     "viewRight": true,
     "down": false,
-    "up": false
+    "up": false,
 };
 
-function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop) {
+let heroe;
+let level = 3;
+let levelCount = 1;
+let countVillainsDeleted = 0;
+
+function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop, _countDegreesHeroe, distanceObjects) {
     /*///////////////////////////////////////////////////////////////////////////////////////
     /                                 Declaracion de variables                              /
     /*///////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +34,10 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
     let bullets = [];
     let indexBullets = [];
     let indexVillains = [];
-    let countDegrees = 0;
+    let countDegrees = _countDegreesHeroe;
+
+    for (let l = 1; l < level + 1; l++)
+        countVillainsDeleted += (3 * l);
 
     // const clip = data.animations[0];
 
@@ -38,6 +46,8 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
     // action.play();
 
     model.tick = (delta) => {
+
+        heroe = model;
         //mixer.update(delta);
         /*///////////////////////////////////////////////////////////////////////////////////////
         /                                     Movimiento Heroe                                  /
@@ -54,13 +64,13 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
             model.position.y += 0.1;
         //Rotar la nave
         if (dirHeroe.right)
-            model.rotation.y = -10 * Math.sin(MathUtils.degToRad((180 + countDegrees) * 0.102));
+            model.rotation.y = -distanceObjects * Math.sin(MathUtils.degToRad((180 + countDegrees) * 0.102));
         else if (dirHeroe.left)
-            model.rotation.y = -10 * Math.sin(MathUtils.degToRad(countDegrees * 0.108));
+            model.rotation.y = -distanceObjects * Math.sin(MathUtils.degToRad(countDegrees * 0.108));
         //Mover heroe a la derecha o izquierda
         if (dirHeroe.left || dirHeroe.right) {
-            model.position.x = 10 * Math.cos(MathUtils.degToRad(countDegrees));
-            model.position.z = 10 * Math.sin(MathUtils.degToRad(countDegrees));
+            model.position.x = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+            model.position.z = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
         }
         //Restablecer contador de grados al llegar al limite
         if (countDegrees >= 360)
@@ -83,6 +93,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
                     scene.remove(model);
                     document.removeEventListener("keydown", onHeroeMove, false);
                     document.removeEventListener("keyup", onHeoreStop, false);
+                    loop.updatables = [];
                     loop.stop();
                 }
             }
@@ -93,6 +104,9 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
             dirVillainArray[index].exists = false;
             scene.remove(villainModelsArray[index]);
             delete (villainModelsArray[index]);
+            countVillainsDeleted--;
+            if (countVillainsDeleted === 15)
+                levelCount++;
         });
 
         indexVillains = [];
@@ -114,6 +128,9 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
             dirVillainArray[index].exists = false;
             scene.remove(villainModelsArray[index]);
             delete (villainModelsArray[index]);
+            countVillainsDeleted--;
+            if (countVillainsDeleted === 15)
+                levelCount++;
         });
 
         indexVillains = [];
@@ -150,8 +167,8 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
             else if (bulletInfo.right)
                 bulletInfo.countPosition -= 1.2;
             //Mover bala 
-            bulletInfo.bullet.position.z = 10 * Math.sin(MathUtils.degToRad(bulletInfo.count));
-            bulletInfo.bullet.position.x = 10 * Math.cos(MathUtils.degToRad(bulletInfo.count));
+            bulletInfo.bullet.position.z = distanceObjects * Math.sin(MathUtils.degToRad(bulletInfo.count));
+            bulletInfo.bullet.position.x = distanceObjects * Math.cos(MathUtils.degToRad(bulletInfo.count));
             //Establecer limites de movimiento
             bulletInfo.count = bulletInfo.count >= 360 ? 0 : (bulletInfo.count <= -360 ? 0 : bulletInfo.count);
             bulletInfo.countPosition = bulletInfo.countPosition >= 360 ? 0 : (bulletInfo.countPosition <= -360 ? 0 : bulletInfo.countPosition);
@@ -185,7 +202,6 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
         const now = Date.now();
 
         if (keyCode === keyboards.a) {
-
             dirHeroe.left = true;
             dirHeroe.viewLeft = true;
             dirHeroe.viewRight = false;
@@ -238,14 +254,15 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop)
     return model;
 }
 
-function setupModelVillain(data, scene, dirVillain, loop) {
+function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanceObjects) {
     /*//////////////////////////////////////////////////////
     /               Definicion de variables                /
     ///////////////////////////////////////////////////////*/
     const model = data.scene.children[0];
     let bulletsVillain = [];
     let indexBulletsVillain = [];
-    let countDegrees = 0;
+    //let countDegrees = 0;
+    let countDegrees = _countDegrees;
     let countUpDown = model.position.y;
     let limiteUp = model.position.y + 2;
     let limiteDown = model.position.y - 2;
@@ -254,132 +271,181 @@ function setupModelVillain(data, scene, dirVillain, loop) {
     // const action = mixer.clipAction(clip);
     // action.play();
 
+    if (levelCount === 1) {
+        if (model.name === 'villain0' || model.name === 'villain1' || model.name === 'villain2')
+            dirVillain.runTick = true;
+    }
+
     model.tick = (delta) => {
-        //mixer.update(delta);
-        /*////////////////////////////////////////////////////////////////////////////////////////
-        /                                 Movimiento nave enemiga                                /
-        /*///////////////////////////////////////////////////////////////////////////////////////*/
-
-        //Aumenta los grados del movimiento de la nave
-        if (dirVillain.left)
-            countDegrees += 0.2;
-        else if (dirVillain.right)
-            countDegrees -= 0.2;
-        //Aumenta el contador de arriba abajo
-        if (dirVillain.up)
-            countUpDown += 0.05;
-        else if (dirVillain.down)
-            countUpDown -= 0.05;
-        //Restablece la direccion en el eje y
-        if (countUpDown >= limiteUp) {
-            dirVillain.up = false;
-            dirVillain.down = true;
-        }
-        else if (countUpDown <= limiteDown) {
-            dirVillain.up = true;
-            dirVillain.down = false;
-        }
-        //Mueve la nave
-        model.position.x = 10 * Math.cos(MathUtils.degToRad(countDegrees));
-        model.position.z = 10 * Math.sin(MathUtils.degToRad(countDegrees));
-        //Restablece el contador de grados del movimiento de la nave
-        if (countDegrees >= 360)
-            countDegrees = 0;
-        else if (countDegrees <= -360)
-            countDegrees = 0;
-
-        /*/////////////////////////////////////////////////////////////////////////////////////////
-        /                                 Movimiento balas villano                                /
-        /*///////////////////////////////////////////////////////////////////////////////////////*/
-
-        //Crear balas
-        if (!dirVillain.bullets) {
-            for (let i = 0; i < dirVillain.bulletsInSpaceship; i++)
-                bulletsVillain.push({
-                    "left": dirVillain.left,
-                    "right": dirVillain.right,
-                    "count": 0,
-                    "countPosition": 0,
-                    "onMovement": true,
-                    "velocity": 0.4,
-                    "bullet": createBullet(model),
-                    "recentCreated": true
-                });
-            dirVillain.bullets = true;
-        }
-
-        //Aumentar el atraso del disparo
-        if (dirVillain.exists)
-            dirVillain.shootRecall += dirVillain.velocityShootRecall;
-
-        //Si el shoot recall llega al limite dispara
-        if (dirVillain.shootRecall >= dirVillain.limitShootRecall)
-            dirVillain.shoot = true;
-
-        //Si la nave enemiga dispara
-        if (dirVillain.shoot) {
-            //Recorre la bala
-            bulletsVillain.forEach((bulletInfo, indexBulletVillain) => {
-                //Si la bala esta recien creada
-                if (bulletInfo.recentCreated) {
-                    bulletInfo.count = countDegrees;
-                    scene.add(bulletInfo.bullet);
-                    bulletInfo.recentCreated = false;
-                }
-
-                //Incrementar contador de grados de la bala
-                if (bulletInfo.left)
-                    bulletInfo.count += bulletInfo.velocity;
-                else if (bulletInfo.right)
-                    bulletInfo.count -= bulletInfo.velocity;
-                //Incrementar contador de grados secundario de la bala
-                if (bulletInfo.left)
-                    bulletInfo.countPosition += bulletInfo.velocity;
-                else if (bulletInfo.right)
-                    bulletInfo.countPosition -= bulletInfo.velocity;
-                //Mover bala 
-                bulletInfo.bullet.position.z = 10 * Math.sin(MathUtils.degToRad(bulletInfo.count));
-                bulletInfo.bullet.position.x = 10 * Math.cos(MathUtils.degToRad(bulletInfo.count));
-                //Establecer limites de movimiento
-                bulletInfo.count = bulletInfo.count >= 360 ? 0 : (bulletInfo.count <= -360 ? 0 : bulletInfo.count);
-                bulletInfo.countPosition = bulletInfo.countPosition >= 360 ? 0 : (bulletInfo.countPosition <= -360 ? 0 : bulletInfo.countPosition);
-
-                //Eliminar bala cuando llegue a un limite
-                if (bulletInfo.left && bulletInfo.countPosition >= 100) {
-                    indexBulletsVillain.push(indexBulletVillain);
-                    scene.remove(bulletInfo.bullet);
-                    bulletInfo.bullet.geometry.dispose();
-                    bulletInfo.bullet.material.dispose();
-                    bulletInfo.bullet = null;
-                }
-
-                else if (bulletInfo.right && bulletInfo.countPosition <= -100) {
-                    indexBulletsVillain.push(indexBulletVillain);
-                    scene.remove(bulletInfo.bullet);
-                    bulletInfo.bullet.geometry.dispose();
-                    bulletInfo.bullet.material.dispose();
-                    bulletInfo.bullet = null;
-                }
-            });
-
-            if (indexBulletsVillain.length === dirVillain.bulletsInSpaceship) {
-                bulletsVillain = [];
-                indexBulletsVillain = [];
-                dirVillain.shoot = false;
-                dirVillain.bullets = false;
-                dirVillain.shootRecall = 0;
-                //Si y se destruyeron las tres y el modelo a sido destruido elimina tambien del loop
-                if (!dirVillain.exists) {
-                    console.log(loop.updatables);
-                    loop.updatables.splice(loop.updatables.indexOf(model), 1);
-                }
+        if (levelCount === 2 && dirVillain.exists) {
+            if (model.name === 'villain3' || model.name === 'villain4' || model.name === 'villain5' ||
+                model.name === 'villain6' || model.name === 'villain7' || model.name === 'villain8') {
+                dirVillain.runTick = true;
+                scene.add(model);
             }
         }
 
-        if (!dirVillain.exists && !dirVillain.shoot) {
-            loop.updatables.splice(loop.updatables.indexOf(model), 1);
-            console.log(loop.updatables);
+        if (levelCount === 3 && dirVillain.exists) {
+            if (model.name === 'villain9' || model.name === 'villain10' || model.name === 'villain11' ||
+                model.name === 'villain12' || model.name === 'villain13' || model.name === 'villain14' ||
+                model.name === 'villain15' || model.name === 'villain16' || model.name === 'villain17') {
+                dirVillain.runTick = true;
+                scene.add(model);
+            }
         }
+        if (dirVillain.runTick) {
+            //mixer.update(delta);
+            /*////////////////////////////////////////////////////////////////////////////////////////
+            /                                 Movimiento nave enemiga                                /
+            /*///////////////////////////////////////////////////////////////////////////////////////*/
+
+            //Aumenta los grados del movimiento de la nave
+            if (dirVillain.left)
+                countDegrees += 0.2;
+            else if (dirVillain.right)
+                countDegrees -= 0.2;
+            //Aumenta el contador de arriba abajo
+            if (dirVillain.up)
+                countUpDown += 0.05;
+            else if (dirVillain.down)
+                countUpDown -= 0.05;
+            //Restablece la direccion en el eje y
+            if (countUpDown >= limiteUp) {
+                dirVillain.up = false;
+                dirVillain.down = true;
+            }
+            else if (countUpDown <= limiteDown) {
+                dirVillain.up = true;
+                dirVillain.down = false;
+            }
+            //Mueve la nave
+            model.position.x = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+            model.position.z = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+            //Restablece el contador de grados del movimiento de la nave
+            if (countDegrees >= 360)
+                countDegrees = 0;
+            else if (countDegrees <= -360)
+                countDegrees = 0;
+
+            /*/////////////////////////////////////////////////////////////////////////////////////////
+            /                                 Movimiento balas villano                                /
+            /*///////////////////////////////////////////////////////////////////////////////////////*/
+
+            //Crear balas
+            if (!dirVillain.bullets) {
+                for (let i = 0; i < dirVillain.bulletsInSpaceship; i++)
+                    bulletsVillain.push({
+                        "left": dirVillain.left,
+                        "right": dirVillain.right,
+                        "count": 0,
+                        "countPosition": 0,
+                        "onMovement": true,
+                        "velocity": 0.4,
+                        "bullet": createBullet(model),
+                        "recentCreated": true,
+                        "colisionated": false
+                    });
+
+                dirVillain.bullets = true;
+            }
+
+            //Aumentar el atraso del disparo
+            if (dirVillain.exists)
+                dirVillain.shootRecall += dirVillain.velocityShootRecall;
+
+            //Si el shoot recall llega al limite dispara
+            if (dirVillain.shootRecall >= dirVillain.limitShootRecall)
+                dirVillain.shoot = true;
+
+            //Caja colisionadora del heroe
+            let boxHeroe = new Box3().setFromObject(heroe);
+            //Si la nave enemiga dispara
+            if (dirVillain.shoot) {
+                //Recorre la bala
+                bulletsVillain.forEach((bulletInfo, indexBulletVillain) => {
+                    //Si la bala esta recien creada
+                    if (bulletInfo.recentCreated) {
+                        bulletInfo.count = countDegrees;
+                        scene.add(bulletInfo.bullet);
+                        bulletInfo.recentCreated = false;
+                    }
+
+                    //Incrementar contador de grados de la bala
+                    if (bulletInfo.left)
+                        bulletInfo.count += bulletInfo.velocity;
+                    else if (bulletInfo.right)
+                        bulletInfo.count -= bulletInfo.velocity;
+                    //Incrementar contador de grados secundario de la bala
+                    if (bulletInfo.left)
+                        bulletInfo.countPosition += bulletInfo.velocity;
+                    else if (bulletInfo.right)
+                        bulletInfo.countPosition -= bulletInfo.velocity;
+                    //Mover bala 
+                    bulletInfo.bullet.position.z = distanceObjects * Math.sin(MathUtils.degToRad(bulletInfo.count));
+                    bulletInfo.bullet.position.x = distanceObjects * Math.cos(MathUtils.degToRad(bulletInfo.count));
+                    //Establecer limites de movimiento
+                    bulletInfo.count = bulletInfo.count >= 360 ? 0 : (bulletInfo.count <= -360 ? 0 : bulletInfo.count);
+                    bulletInfo.countPosition = bulletInfo.countPosition >= 360 ? 0 : (bulletInfo.countPosition <= -360 ? 0 : bulletInfo.countPosition);
+
+                    /*/////////////////////////////////////////////////////////////////////////////////////////
+                    /                               COLISION BALAS VILLANO HEROE                              /
+                    /*///////////////////////////////////////////////////////////////////////////////////////*/
+
+                    let boxVillainBullet = new Box3().setFromObject(bulletInfo.bullet);
+
+                    if (boxVillainBullet.intersectsBox(boxHeroe) && !bulletInfo.colisionated) {
+                        indexBulletsVillain.push(indexBulletVillain);
+                        scene.remove(bulletInfo.bullet);
+                        bulletInfo.bullet.geometry.dispose();
+                        bulletInfo.bullet.material.dispose();
+                        bulletInfo.bullet = null;
+                        bulletInfo.colisionated = true;
+                        dirHeroe.lifes -= 1;
+                        if (dirHeroe.lifes === 0) {
+
+                            //document.removeEventListener("keydown", onHeroeMove, false);
+                            //document.removeEventListener("keyup", onHeoreStop, false);
+                            loop.updatables = [];
+                            loop.stop();
+                        }
+                    }
+
+                    /*/////////////////////////////////////////////////////////////////////////////////////////
+                    /                                     LIMITE DE BALAS                                     /
+                    /*///////////////////////////////////////////////////////////////////////////////////////*/
+
+                    //Eliminar bala cuando llegue a un limite
+                    if (bulletInfo.left && bulletInfo.countPosition >= 100 && !bulletInfo.colisionated) {
+                        indexBulletsVillain.push(indexBulletVillain);
+                        scene.remove(bulletInfo.bullet);
+                        bulletInfo.bullet.geometry.dispose();
+                        bulletInfo.bullet.material.dispose();
+                        bulletInfo.bullet = null;
+                    }
+                    else if (bulletInfo.right && bulletInfo.countPosition <= -100 && !bulletInfo.colisionated) {
+                        indexBulletsVillain.push(indexBulletVillain);
+                        scene.remove(bulletInfo.bullet);
+                        bulletInfo.bullet.geometry.dispose();
+                        bulletInfo.bullet.material.dispose();
+                        bulletInfo.bullet = null;
+                    }
+                });
+
+                if (indexBulletsVillain.length === dirVillain.bulletsInSpaceship) {
+                    bulletsVillain = [];
+                    indexBulletsVillain = [];
+                    dirVillain.shoot = false;
+                    dirVillain.bullets = false;
+                    dirVillain.shootRecall = 0;
+
+                    //loop.updatables.splice(loop.updatables.indexOf(model), 1);
+                }
+            }
+
+            if (!dirVillain.exists && !dirVillain.shoot)
+                dirVillain.runTick = false;
+        }
+
     }
 
     return model;
