@@ -46,7 +46,7 @@ async function loadSpaceships(scene, loop) {
     let villainModelsArray = [];
     for (let l = 1; l < level + 1; l++)
         countLevel += (3 * l);
-        
+
     const heroeData = await loader.loadAsync('/models/Parrot.glb');
     const villainsData = await createModels(countLevel, '/models/Stork.glb', true, false);
 
@@ -64,14 +64,12 @@ async function loadSpaceships(scene, loop) {
         villain.scene.children[0].position.y = (index * 1) - separator;
         villain.scene.children[0].scale.set(0.1, 0.1, 0.1);
 
-        //villain.scene.children[0].position.set(10, (index * 1) - separator, 0);
         if (dirVillainArray[index].right)
             villain.scene.children[0].rotation.y = MathUtils.degToRad(90);
         else if (dirVillainArray[index].left)
             villain.scene.children[0].rotation.y = MathUtils.degToRad(-90);
         villain.scene.children[0].name = 'villain' + index;
         const spaceShipVillain = setupModelVillain(villain, scene, dirVillainArray[index], loop, _countDegreesVillains, distanceObjects);
-
         villainModelsArray.push(spaceShipVillain);
     });
 

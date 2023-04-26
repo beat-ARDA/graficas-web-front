@@ -25,6 +25,7 @@ let heroe;
 let level = 3;
 let levelCount = 1;
 let countVillainsDeleted = 0;
+let countDegreesHeroe = 0;
 
 function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop, _countDegreesHeroe, distanceObjects) {
     /*///////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +35,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
     let bullets = [];
     let indexBullets = [];
     let indexVillains = [];
-    let countDegrees = _countDegreesHeroe;
+    countDegreesHeroe = _countDegreesHeroe;
 
     for (let l = 1; l < level + 1; l++)
         countVillainsDeleted += (3 * l);
@@ -54,9 +55,9 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
         /*///////////////////////////////////////////////////////////////////////////////////////
         //Aumentar contador de grados
         if (dirHeroe.left)
-            countDegrees += 0.6;
+            countDegreesHeroe += 0.6;
         else if (dirHeroe.right)
-            countDegrees -= 0.6;
+            countDegreesHeroe -= 0.6;
         //Subir o bajar nave
         if (dirHeroe.down)
             model.position.y -= 0.1;
@@ -64,19 +65,19 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             model.position.y += 0.1;
         //Rotar la nave
         if (dirHeroe.right)
-            model.rotation.y = -distanceObjects * Math.sin(MathUtils.degToRad((180 + countDegrees) * 0.102));
+            model.rotation.y = -distanceObjects * Math.sin(MathUtils.degToRad((180 + countDegreesHeroe) * 0.102));
         else if (dirHeroe.left)
-            model.rotation.y = -distanceObjects * Math.sin(MathUtils.degToRad(countDegrees * 0.108));
+            model.rotation.y = -distanceObjects * Math.sin(MathUtils.degToRad(countDegreesHeroe * 0.108));
         //Mover heroe a la derecha o izquierda
         if (dirHeroe.left || dirHeroe.right) {
-            model.position.x = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
-            model.position.z = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+            model.position.x = distanceObjects * Math.cos(MathUtils.degToRad(countDegreesHeroe));
+            model.position.z = distanceObjects * Math.sin(MathUtils.degToRad(countDegreesHeroe));
         }
         //Restablecer contador de grados al llegar al limite
-        if (countDegrees >= 360)
-            countDegrees = 0;
-        else if (countDegrees <= -360)
-            countDegrees = 0;
+        if (countDegreesHeroe >= 360)
+            countDegreesHeroe = 0;
+        else if (countDegreesHeroe <= -360)
+            countDegreesHeroe = 0;
 
         /*///////////////////////////////////////////////////////////////////////////////////////
         /                                      Colisiones                                       /
@@ -152,7 +153,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
 
         bullets.forEach((bulletInfo, index) => {
             if (bulletInfo.recentCreated) {
-                bulletInfo.count = countDegrees;
+                bulletInfo.count = countDegreesHeroe;
                 bulletInfo.recentCreated = false;
             }
 
@@ -277,10 +278,94 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
     }
 
     model.tick = (delta) => {
-        if (levelCount === 2 && dirVillain.exists) {
+       
+        //Crear villanos level 2
+        if (levelCount === 2 && dirVillain.exists && !dirVillain.created) {
             if (model.name === 'villain3' || model.name === 'villain4' || model.name === 'villain5' ||
                 model.name === 'villain6' || model.name === 'villain7' || model.name === 'villain8') {
                 dirVillain.runTick = true;
+                dirVillain.created = true;
+
+                //Posicionar a los villanos
+                /**Primera ola de villanos*/
+                if (model.name === 'villain3') {
+                    //Controla countDegrees
+                    let incrementCountDegrees = countDegreesHeroe + 90;
+
+                    if (incrementCountDegrees > 360)
+                        countDegrees = incrementCountDegrees - 360;
+                    else
+                        countDegrees = incrementCountDegrees;
+
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+                }
+                else if (model.name === 'villain4') {
+                    //Controla countDegrees
+                    let countDegreesOk = 0;
+                    let incrementCountDegrees = countDegreesHeroe + 90;
+
+                    if (incrementCountDegrees > 360)
+                        countDegrees = incrementCountDegrees - 360;
+                    else
+                        countDegrees = incrementCountDegrees;
+
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+                }
+                else if (model.name === 'villain5') {
+                    //Controla countDegrees
+                    let countDegreesOk = 0;
+                    let incrementCountDegrees = countDegreesHeroe + 90;
+
+                    if (incrementCountDegrees > 360)
+                        countDegrees = incrementCountDegrees - 360;
+                    else
+                        countDegrees = incrementCountDegrees;
+                    console.log(countDegrees);
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+                }
+                if (model.name === 'villain6') {
+                    //Controla countDegrees
+                    let countDegreesOk = 0;
+                    let decrementCountDegrees = countDegreesHeroe - 90;
+
+                    if (decrementCountDegrees < -360)
+                        countDegrees = decrementCountDegrees + 360;
+                    else
+                        countDegrees = decrementCountDegrees;
+
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+                }
+                else if (model.name === 'villain7') {
+                    //Controla countDegrees
+                    let countDegreesOk = 0;
+                    let decrementCountDegrees = countDegreesHeroe - 90;
+
+                    if (decrementCountDegrees < -360)
+                        countDegrees = decrementCountDegrees + 360;
+                    else
+                        countDegrees = decrementCountDegrees;
+
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+                }
+                else if (model.name === 'villain8') {
+                    //Controla countDegrees
+                    let countDegreesOk = 0;
+                    let decrementCountDegrees = countDegreesHeroe - 90;
+
+                    if (decrementCountDegrees < -360)
+                        countDegrees = decrementCountDegrees + 360;
+                    else
+                        countDegrees = decrementCountDegrees;
+                    console.log(countDegrees);
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+                }
+
                 scene.add(model);
             }
         }
@@ -402,7 +487,6 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                         bulletInfo.colisionated = true;
                         dirHeroe.lifes -= 1;
                         if (dirHeroe.lifes === 0) {
-
                             //document.removeEventListener("keydown", onHeroeMove, false);
                             //document.removeEventListener("keyup", onHeoreStop, false);
                             loop.updatables = [];
