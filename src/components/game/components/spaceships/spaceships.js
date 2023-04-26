@@ -61,7 +61,7 @@ async function loadSpaceships(scene, loop) {
 
         villain.scene.children[0].position.x = distanceObjects * Math.cos(MathUtils.degToRad(_countDegreesVillains));
         villain.scene.children[0].position.z = distanceObjects * Math.sin(MathUtils.degToRad(_countDegreesVillains));
-        villain.scene.children[0].position.y = (index * 1) - separator;
+        villain.scene.children[0].position.y = index - separator;
         villain.scene.children[0].scale.set(0.1, 0.1, 0.1);
 
         if (dirVillainArray[index].right)

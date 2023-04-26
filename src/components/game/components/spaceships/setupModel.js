@@ -47,7 +47,6 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
     // action.play();
 
     model.tick = (delta) => {
-
         heroe = model;
         //mixer.update(delta);
         /*///////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +105,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             scene.remove(villainModelsArray[index]);
             delete (villainModelsArray[index]);
             countVillainsDeleted--;
-            if (countVillainsDeleted === 15)
+            if (countVillainsDeleted === 15 || countVillainsDeleted === 9)
                 levelCount++;
         });
 
@@ -130,7 +129,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             scene.remove(villainModelsArray[index]);
             delete (villainModelsArray[index]);
             countVillainsDeleted--;
-            if (countVillainsDeleted === 15)
+            if (countVillainsDeleted === 15 || countVillainsDeleted === 9)
                 levelCount++;
         });
 
@@ -278,7 +277,7 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
     }
 
     model.tick = (delta) => {
-       
+
         //Crear villanos level 2
         if (levelCount === 2 && dirVillain.exists && !dirVillain.created) {
             if (model.name === 'villain3' || model.name === 'villain4' || model.name === 'villain5' ||
@@ -286,7 +285,6 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                 dirVillain.runTick = true;
                 dirVillain.created = true;
 
-                //Posicionar a los villanos
                 /**Primera ola de villanos*/
                 if (model.name === 'villain3') {
                     //Controla countDegrees
@@ -298,11 +296,12 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                         countDegrees = incrementCountDegrees;
 
                     model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.y = -1;
                     model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
                 }
                 else if (model.name === 'villain4') {
                     //Controla countDegrees
-                    let countDegreesOk = 0;
+
                     let incrementCountDegrees = countDegreesHeroe + 90;
 
                     if (incrementCountDegrees > 360)
@@ -311,24 +310,26 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                         countDegrees = incrementCountDegrees;
 
                     model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.y = 0;
                     model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
                 }
                 else if (model.name === 'villain5') {
                     //Controla countDegrees
-                    let countDegreesOk = 0;
+
                     let incrementCountDegrees = countDegreesHeroe + 90;
 
                     if (incrementCountDegrees > 360)
                         countDegrees = incrementCountDegrees - 360;
                     else
                         countDegrees = incrementCountDegrees;
-                    console.log(countDegrees);
+
                     model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.y = 1;
                     model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
                 }
                 if (model.name === 'villain6') {
                     //Controla countDegrees
-                    let countDegreesOk = 0;
+
                     let decrementCountDegrees = countDegreesHeroe - 90;
 
                     if (decrementCountDegrees < -360)
@@ -337,11 +338,12 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                         countDegrees = decrementCountDegrees;
 
                     model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.y = -1;
                     model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
                 }
                 else if (model.name === 'villain7') {
                     //Controla countDegrees
-                    let countDegreesOk = 0;
+
                     let decrementCountDegrees = countDegreesHeroe - 90;
 
                     if (decrementCountDegrees < -360)
@@ -350,19 +352,21 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                         countDegrees = decrementCountDegrees;
 
                     model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.y = 0;
                     model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
                 }
                 else if (model.name === 'villain8') {
                     //Controla countDegrees
-                    let countDegreesOk = 0;
+
                     let decrementCountDegrees = countDegreesHeroe - 90;
 
                     if (decrementCountDegrees < -360)
                         countDegrees = decrementCountDegrees + 360;
                     else
                         countDegrees = decrementCountDegrees;
-                    console.log(countDegrees);
+
                     model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.y = 1;
                     model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
                 }
 
@@ -370,11 +374,73 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
             }
         }
 
-        if (levelCount === 3 && dirVillain.exists) {
+        if (levelCount === 3 && dirVillain.exists && !dirVillain.created) {
             if (model.name === 'villain9' || model.name === 'villain10' || model.name === 'villain11' ||
                 model.name === 'villain12' || model.name === 'villain13' || model.name === 'villain14' ||
                 model.name === 'villain15' || model.name === 'villain16' || model.name === 'villain17') {
                 dirVillain.runTick = true;
+                dirVillain.created = true;
+
+                //PRIMERA OLEADA
+                if (model.name === 'villain9' || model.name === 'villain10' || model.name === 'villain11') {
+                    let incrementCountDegrees = countDegreesHeroe + 90;
+
+                    if (incrementCountDegrees > 360)
+                        countDegrees = incrementCountDegrees - 360;
+                    else
+                        countDegrees = incrementCountDegrees;
+
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+
+                    if (model.name === 'villain9')
+                        model.position.y = -1;
+                    else if (model.name === 'villain10')
+                        model.position.y = 0;
+                    else if (model.name === 'villain11')
+                        model.position.y = 1;
+                }
+
+                //SEGUNDA OLEADA
+                if (model.name === 'villain12' || model.name === 'villain13' || model.name === 'villain14') {
+                    let decrementCountDegrees = countDegreesHeroe - 90;
+
+                    if (decrementCountDegrees < -360)
+                        countDegrees = decrementCountDegrees + 360;
+                    else
+                        countDegrees = decrementCountDegrees;
+
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+
+                    if (model.name === 'villain12')
+                        model.position.y = -1;
+                    else if (model.name === 'villain13')
+                        model.position.y = 0;
+                    else if (model.name === 'villain14')
+                        model.position.y = 1;
+                }
+
+                //TERCERA OLEADA
+                if (model.name === 'villain15' || model.name === 'villain16' || model.name === 'villain17') {
+                    let decrementCountDegrees = countDegreesHeroe - 45;
+
+                    if (decrementCountDegrees < -360)
+                        countDegrees = decrementCountDegrees + 360;
+                    else
+                        countDegrees = decrementCountDegrees;
+
+                    model.position.x = distanceObjects * Math.sin(MathUtils.degToRad(countDegrees));
+                    model.position.z = distanceObjects * Math.cos(MathUtils.degToRad(countDegrees));
+
+                    if (model.name === 'villain15')
+                        model.position.y = -1;
+                    else if (model.name === 'villain16')
+                        model.position.y = 0;
+                    else if (model.name === 'villain17')
+                        model.position.y = 1;
+                }
+
                 scene.add(model);
             }
         }
