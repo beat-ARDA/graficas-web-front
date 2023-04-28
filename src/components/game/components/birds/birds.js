@@ -10,7 +10,6 @@ async function loadBirds() {
         loader.loadAsync('/models/Stork.glb'),
     ]);
 
-    console.log('Squaaawk!', flamingoData);
     const parrot = setupModel(parrotData);
     parrot.position.set(0, 0, 2.5);
 

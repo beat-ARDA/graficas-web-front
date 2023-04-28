@@ -12,6 +12,8 @@ const keyboards = {
 }
 
 const dirHeroe = {
+    "hasShield": false,
+    "countShiled": 5,
     "lifes": 3,
     "left": false,
     "right": false,
@@ -27,14 +29,17 @@ let levelCount = 1;
 let countVillainsDeleted = 0;
 let countDegreesHeroe = 0;
 
-function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop, _countDegreesHeroe, distanceObjects) {
+function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop, _countDegreesHeroe, distanceObjects, shieldItem) {
     /*///////////////////////////////////////////////////////////////////////////////////////
     /                                 Declaracion de variables                              /
     /*///////////////////////////////////////////////////////////////////////////////////////
+
     const model = data.scene.children[0];
     let bullets = [];
     let indexBullets = [];
     let indexVillains = [];
+    let timeToCreateItem = 0;
+    let itemCreated = false;
     countDegreesHeroe = _countDegreesHeroe;
 
     for (let l = 1; l < level + 1; l++)
@@ -46,7 +51,37 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
     // const action = mixer.clipAction(clip);
     // action.play();
 
-    model.tick = (delta) => {
+    model.tick = async (delta) => {
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        /                                    CREATE ITEMS                                       /
+        /*///////////////////////////////////////////////////////////////////////////////////////
+
+        if (!itemCreated)
+            timeToCreateItem += 0.08;
+
+        if (timeToCreateItem >= 10) {
+            scene.add(shieldItem);
+            itemCreated = true;
+            timeToCreateItem = 0;
+        }
+
+        if (shieldItem.position.y <= -5) {
+            scene.remove(shieldItem);
+            itemCreated = false;
+        }
+
+        //Colision shield
+        if (itemCreated) {
+            let boxHeroe = new Box3().setFromObject(model);
+            let boxShield = new Box3().setFromObject(shieldItem);
+
+            if (boxHeroe.intersectsBox(boxShield)) {
+                scene.remove(shieldItem);
+                itemCreated = false;
+                dirHeroe.hasShield = true;
+            }
+        }
+
         heroe = model;
         //mixer.update(delta);
         /*///////////////////////////////////////////////////////////////////////////////////////
