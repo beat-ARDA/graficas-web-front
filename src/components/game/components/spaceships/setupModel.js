@@ -1,6 +1,7 @@
 import { MathUtils } from "three";
 import { createBullet } from "./bullets/bullets";
 import { Box3 } from "three";
+import { MeshStandardMaterial } from 'three';
 import { AnimationMixer } from 'three';
 
 const keyboards = {
@@ -21,7 +22,16 @@ const dirHeroe = {
     "viewRight": true,
     "down": false,
     "up": false,
+    "material": null
 };
+
+const infoShiled = {
+    "color": new MeshStandardMaterial({ color: 0xFFFF00 }),
+    "colorR": 0,
+    "created": false,
+    "timeToCreate": 0,
+    "timeToHasShield": 0
+}
 
 let heroe;
 let level = 3;
@@ -38,12 +48,12 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
     let bullets = [];
     let indexBullets = [];
     let indexVillains = [];
-    let timeToCreateItem = 0;
-    let itemCreated = false;
     countDegreesHeroe = _countDegreesHeroe;
 
     for (let l = 1; l < level + 1; l++)
         countVillainsDeleted += (3 * l);
+
+    dirHeroe.material = model.material.clone();
 
     // const clip = data.animations[0];
 
@@ -55,31 +65,45 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
         /*///////////////////////////////////////////////////////////////////////////////////////
         /                                    CREATE ITEMS                                       /
         /*///////////////////////////////////////////////////////////////////////////////////////
+        if (!infoShiled.created)
+            infoShiled.timeToCreate += 0.08;
 
-        if (!itemCreated)
-            timeToCreateItem += 0.08;
-
-        if (timeToCreateItem >= 10) {
+        if (infoShiled.timeToCreate >= 10) {
             scene.add(shieldItem);
-            itemCreated = true;
-            timeToCreateItem = 0;
+            infoShiled.created = true;
+            infoShiled.timeToCreate = 0;
         }
 
         if (shieldItem.position.y <= -5) {
             scene.remove(shieldItem);
-            itemCreated = false;
+            infoShiled.created = false;
         }
 
         //Colision shield
-        if (itemCreated) {
+        if (infoShiled.created) {
             let boxHeroe = new Box3().setFromObject(model);
             let boxShield = new Box3().setFromObject(shieldItem);
-
             if (boxHeroe.intersectsBox(boxShield)) {
                 scene.remove(shieldItem);
-                itemCreated = false;
+                infoShiled.created = false;
                 dirHeroe.hasShield = true;
+                model.material = infoShiled.color;
             }
+        }
+
+        if (dirHeroe.hasShield) {
+            infoShiled.colorR += 0.9;
+            infoShiled.color.color.r = Math.sin(MathUtils.degToRad(infoShiled.colorR));
+            infoShiled.timeToHasShield += 0.1;
+        }
+
+        if (infoShiled.timeToHasShield >= 10) {
+            model.material = dirHeroe.material;
+            infoShiled.colorR = 0;
+            infoShiled.created = false;
+            infoShiled.timeToCreate = 0;
+            infoShiled.timeToHasShield = 0;
+            dirHeroe.hasShield = false;
         }
 
         heroe = model;
@@ -123,7 +147,8 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             let boxVillain = new Box3().setFromObject(villain);
             if (boxHeroe.intersectsBox(boxVillain)) {
                 indexVillains.push(villainModelsArray.indexOf(villain));
-                dirHeroe.lifes -= 1;
+                if (!dirHeroe.hasShield)
+                    dirHeroe.lifes -= 1;
                 if (dirHeroe.lifes === 0) {
                     scene.remove(model);
                     document.removeEventListener("keydown", onHeroeMove, false);
@@ -586,7 +611,8 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                         bulletInfo.bullet.material.dispose();
                         bulletInfo.bullet = null;
                         bulletInfo.colisionated = true;
-                        dirHeroe.lifes -= 1;
+                        if (!dirHeroe.hasShield)
+                            dirHeroe.lifes -= 1;
                         if (dirHeroe.lifes === 0) {
                             //document.removeEventListener("keydown", onHeroeMove, false);
                             //document.removeEventListener("keyup", onHeoreStop, false);
