@@ -2,7 +2,6 @@ import { MathUtils } from "three";
 import { createBullet } from "./bullets/bullets";
 import { Box3 } from "three";
 import { MeshStandardMaterial } from 'three';
-import { AnimationMixer } from 'three';
 
 const keyboards = {
     "w": 87,
@@ -14,6 +13,7 @@ const keyboards = {
 
 const dirHeroe = {
     "hasShield": false,
+    "hasBullet": false,
     "countShiled": 5,
     "lifes": 3,
     "left": false,
@@ -22,7 +22,7 @@ const dirHeroe = {
     "viewRight": true,
     "down": false,
     "up": false,
-    "material": null
+    "material": null,
 };
 
 const infoShiled = {
@@ -33,13 +33,35 @@ const infoShiled = {
     "timeToHasShield": 0
 }
 
+const infoHearth = {
+    "created": false,
+    "timeToCreate": 0,
+}
+
+const infoBullet = {
+    "created": false,
+    "timeToCreate": 0,
+    "timeToHasBullet": 0
+}
+
 let heroe;
 let level = 3;
 let levelCount = 1;
 let countVillainsDeleted = 0;
 let countDegreesHeroe = 0;
 
-function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop, _countDegreesHeroe, distanceObjects, shieldItem) {
+function setupModelHeroe(
+    data,
+    villainModelsArray,
+    scene,
+    dirVillainArray,
+    loop,
+    _countDegreesHeroe,
+    distanceObjects,
+    shieldItem,
+    hearthItem,
+    bulletItem
+) {
     /*///////////////////////////////////////////////////////////////////////////////////////
     /                                 Declaracion de variables                              /
     /*///////////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +85,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
 
     model.tick = async (delta) => {
         /*///////////////////////////////////////////////////////////////////////////////////////
-        /                                    CREATE ITEMS                                       /
+        /                                  MANAGE SHIELD ITEM                                   /
         /*///////////////////////////////////////////////////////////////////////////////////////
         if (!infoShiled.created)
             infoShiled.timeToCreate += 0.08;
@@ -106,6 +128,76 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             dirHeroe.hasShield = false;
         }
 
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        /                                  MANAGE HEARTH ITEM                                   /
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        if (!infoHearth.created)
+            infoHearth.timeToCreate += 0.08;
+
+        if (infoHearth.timeToCreate >= 10) {
+            scene.add(hearthItem);
+            infoHearth.created = true;
+            infoHearth.timeToCreate = 0;
+        }
+
+        if (hearthItem.position.y <= -5) {
+            scene.remove(hearthItem);
+            infoHearth.created = false;
+        }
+
+        //Colision heart
+        if (infoHearth.created) {
+            let boxHeroe = new Box3().setFromObject(model);
+            let boxHearth = new Box3().setFromObject(hearthItem);
+            if (boxHeroe.intersectsBox(boxHearth)) {
+                scene.remove(hearthItem);
+                infoHearth.created = false;
+                infoHearth.timeToCreate = 0;
+                dirHeroe.lifes++;
+            }
+        }
+
+        /*///////////////////////////////////////////////////////////////////////////////////////
+        /                                  MANAGE BULLET ITEM                                   /
+        /*///////////////////////////////////////////////////////////////////////////////////////
+
+        if (!infoBullet.created)
+            infoBullet.timeToCreate += 0.08;
+
+        if (infoBullet.timeToCreate >= 10) {
+            scene.add(bulletItem);
+            infoBullet.created = true;
+            infoBullet.timeToCreate = 0;
+        }
+
+        if (bulletItem.position.y <= -5) {
+            scene.remove(bulletItem);
+            infoBullet.created = false;
+        }
+
+        //Colision bullet
+        if (infoBullet.created) {
+            let boxHeroe = new Box3().setFromObject(model);
+            let boxBullet = new Box3().setFromObject(bulletItem);
+            if (boxHeroe.intersectsBox(boxBullet)) {
+                scene.remove(bulletItem);
+                infoBullet.created = false;
+                infoBullet.timeToCreate = 0;
+                dirHeroe.hasBullet = true;
+            }
+        }
+
+        if (dirHeroe.hasBullet)
+            infoBullet.timeToHasBullet += 0.1;
+
+        if (infoBullet.timeToHasBullet >= 10) {
+            infoBullet.created = false;
+            infoBullet.timeToCreate = 0;
+            infoBullet.timeToHasBullet = 0;
+            dirHeroe.hasBullet = false;
+        }
+
+
         heroe = model;
         //mixer.update(delta);
         /*///////////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +220,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             model.rotation.y = -distanceObjects * Math.sin(MathUtils.degToRad(countDegreesHeroe * 0.108));
         //Mover heroe a la derecha o izquierda
         if (dirHeroe.left || dirHeroe.right) {
+
             model.position.x = distanceObjects * Math.cos(MathUtils.degToRad(countDegreesHeroe));
             model.position.z = distanceObjects * Math.sin(MathUtils.degToRad(countDegreesHeroe));
         }
@@ -147,8 +240,12 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             let boxVillain = new Box3().setFromObject(villain);
             if (boxHeroe.intersectsBox(boxVillain)) {
                 indexVillains.push(villainModelsArray.indexOf(villain));
-                if (!dirHeroe.hasShield)
+
+                if (!dirHeroe.hasShield) {
+                    console.log('colisione');
                     dirHeroe.lifes -= 1;
+                }
+
                 if (dirHeroe.lifes === 0) {
                     scene.remove(model);
                     document.removeEventListener("keydown", onHeroeMove, false);
@@ -211,6 +308,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
         /*///////////////////////////////////////////////////////////////////////////////////////
 
         bullets.forEach((bulletInfo, index) => {
+
             if (bulletInfo.recentCreated) {
                 bulletInfo.count = countDegreesHeroe;
                 bulletInfo.recentCreated = false;
@@ -229,6 +327,10 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             //Mover bala 
             bulletInfo.bullet.position.z = distanceObjects * Math.sin(MathUtils.degToRad(bulletInfo.count));
             bulletInfo.bullet.position.x = distanceObjects * Math.cos(MathUtils.degToRad(bulletInfo.count));
+            if (bulletInfo.up)
+                bulletInfo.bullet.position.y += 0.01;
+            else if (bulletInfo.down)
+                bulletInfo.bullet.position.y -= 0.01;
             //Establecer limites de movimiento
             bulletInfo.count = bulletInfo.count >= 360 ? 0 : (bulletInfo.count <= -360 ? 0 : bulletInfo.count);
             bulletInfo.countPosition = bulletInfo.countPosition >= 360 ? 0 : (bulletInfo.countPosition <= -360 ? 0 : bulletInfo.countPosition);
@@ -250,7 +352,7 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
             bullets[index].bullet.geometry.dispose();
             bullets[index].bullet.material.dispose();
             bullets[index].bullet = null;
-            bullets.splice(index, 1);
+            delete (bullets[index]);
         });
 
         indexBullets = [];
@@ -277,18 +379,61 @@ function setupModelHeroe(data, villainModelsArray, scene, dirVillainArray, loop,
 
         if (now - lastExecutionTime >= 100) {
             if (keyCode === keyboards.space) {
-                const bullet = createBullet(model);
-                bullets.push({
-                    "left": dirHeroe.viewLeft,
-                    "right": dirHeroe.viewRight,
-                    "count": 0,
-                    "countPosition": 0,
-                    "onMovement": true,
-                    "recentCreated": true,
-                    "bullet": bullet
-                });
+                if (!dirHeroe.hasBullet) {
+                    const bullet = createBullet(model);
+                    bullets.push({
+                        "left": dirHeroe.viewLeft,
+                        "right": dirHeroe.viewRight,
+                        "count": 0,
+                        "countPosition": 0,
+                        "onMovement": true,
+                        "recentCreated": true,
+                        "bullet": bullet
+                    });
 
-                scene.add(bullet);
+                    scene.add(bullet);
+                } else if (dirHeroe.hasBullet) {
+                    const bullet1 = createBullet(model);
+                    const bullet2 = createBullet(model);
+                    const bullet3 = createBullet(model);
+                    bullets.push({
+                        "up": true,
+                        "down": false,
+                        "left": dirHeroe.viewLeft,
+                        "right": dirHeroe.viewRight,
+                        "count": 0,
+                        "countPosition": 0,
+                        "onMovement": true,
+                        "recentCreated": true,
+                        "bullet": bullet1
+                    });
+                    bullets.push({
+                        "up": false,
+                        "down": false,
+                        "left": dirHeroe.viewLeft,
+                        "right": dirHeroe.viewRight,
+                        "count": 0,
+                        "countPosition": 0,
+                        "onMovement": true,
+                        "recentCreated": true,
+                        "bullet": bullet2
+                    });
+                    bullets.push({
+                        "up": false,
+                        "down": true,
+                        "left": dirHeroe.viewLeft,
+                        "right": dirHeroe.viewRight,
+                        "count": 0,
+                        "countPosition": 0,
+                        "onMovement": true,
+                        "recentCreated": true,
+                        "bullet": bullet3
+                    });
+
+                    scene.add(bullet1);
+                    scene.add(bullet2);
+                    scene.add(bullet3);
+                }
             }
 
             lastExecutionTime = now;
@@ -337,7 +482,6 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
     }
 
     model.tick = (delta) => {
-
         //Crear villanos level 2
         if (levelCount === 2 && dirVillain.exists && !dirVillain.created) {
             if (model.name === 'villain3' || model.name === 'villain4' || model.name === 'villain5' ||
@@ -611,8 +755,10 @@ function setupModelVillain(data, scene, dirVillain, loop, _countDegrees, distanc
                         bulletInfo.bullet.material.dispose();
                         bulletInfo.bullet = null;
                         bulletInfo.colisionated = true;
-                        if (!dirHeroe.hasShield)
+                        if (!dirHeroe.hasShield) {
                             dirHeroe.lifes -= 1;
+                            console.log(dirHeroe.lifes);
+                        }
                         if (dirHeroe.lifes === 0) {
                             //document.removeEventListener("keydown", onHeroeMove, false);
                             //document.removeEventListener("keyup", onHeoreStop, false);

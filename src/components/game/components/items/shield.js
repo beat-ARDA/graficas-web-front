@@ -10,9 +10,9 @@ async function createShield(scene) {
     const shieldData = await loader.loadAsync('/models/shield.glb');
     const model = shieldData.scene.children[0];
     model.name = "shieldItem";
-    model.position.x = 0;
+    model.position.x = 10 * Math.cos(MathUtils.degToRad(45));
     model.position.y = posY;
-    model.position.z = 10;
+    model.position.z = 10 * Math.sin(MathUtils.degToRad(45));
     model.scale.set(0.04, 0.04, 0.04);
     model.tick = (delta) => {
         degrees += 1.5;

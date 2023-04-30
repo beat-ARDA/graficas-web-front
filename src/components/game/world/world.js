@@ -8,6 +8,8 @@ import { Loop } from '../systems/Loop.js';
 import { createControls } from '../systems/controls.js';
 import { loadBuilding } from '../components/building/building.js';
 import { createShield } from '../components/items/shield.js';
+import { createHearth } from '../components/items/hearth.js';
+import { createBullet } from '../components/items/bullet.js';
 
 let camera;
 let renderer;
@@ -37,9 +39,11 @@ class World {
     async init() {
         const { building } = await loadBuilding();
         const shieldItem = await createShield(scene);
-        const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene, loop, shieldItem);
+        const hearthItem = await createHearth(scene);
+        const bulletItem = await createBullet(scene);
+        const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene, loop, shieldItem, hearthItem, bulletItem);
 
-        loop.updatables.push(spaceShipHeroe, building, shieldItem);
+        loop.updatables.push(spaceShipHeroe, building, shieldItem, hearthItem, bulletItem);
         scene.add(spaceShipHeroe, building);
 
         //Level 1 OnePlayer

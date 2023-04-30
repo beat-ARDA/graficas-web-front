@@ -37,7 +37,7 @@ async function createModels(count, pathModel, left = true, right = false) {
     return await Promise.all(loadersModels);
 }
 
-async function loadSpaceships(scene, loop, shieldItem) {
+async function loadSpaceships(scene, loop, shieldItem, hearthItem, bulletItem) {
     let level = 3;
     let countLevel = 0;
     let distanceObjects = 10;
@@ -47,8 +47,8 @@ async function loadSpaceships(scene, loop, shieldItem) {
     for (let l = 1; l < level + 1; l++)
         countLevel += (3 * l);
 
-    const heroeData = await loader.loadAsync('/models/Nave.glb');
-    const villainsData = await createModels(countLevel, '/models/Stork.glb', true, false);
+    const heroeData = await loader.loadAsync('/models/sapaceShipOnePlayer.glb');
+    const villainsData = await createModels(countLevel, '/models/spaceshipTwoPlayer.glb', true, false);
 
     villainsData.forEach((villain, index) => {
         let separator = 0;
@@ -79,7 +79,18 @@ async function loadSpaceships(scene, loop, shieldItem) {
     heroeData.scene.children[0].position.y = 0;
     heroeData.scene.children[0].scale.set(0.1, 0.1, 0.1);
     heroeData.scene.children[0].rotation.y = MathUtils.degToRad(180);
-    const spaceShipHeroe = setupModelHeroe(heroeData, villainModelsArray, scene, dirVillainArray, loop, _countDegreesHeroe, distanceObjects, shieldItem);
+    const spaceShipHeroe = setupModelHeroe(
+        heroeData,
+        villainModelsArray,
+        scene,
+        dirVillainArray,
+        loop,
+        _countDegreesHeroe,
+        distanceObjects,
+        shieldItem,
+        hearthItem,
+        bulletItem
+    );
     //spaceShipHeroe.position.set(10, 0, 0);
 
     return { spaceShipHeroe, villainModelsArray };

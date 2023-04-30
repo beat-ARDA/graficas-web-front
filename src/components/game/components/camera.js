@@ -32,7 +32,9 @@ function createCamera() {
         1,
         10000,
     );
-    camera.position.set(distanceCamera * Math.cos(MathUtils.degToRad(i)), 0, 0);
+
+    camera.position.set(distanceCamera * Math.cos(MathUtils.degToRad(i)), 0, distanceCamera * Math.sin(MathUtils.degToRad(i)));
+
     camera.tick = () => {
 
         i = left ? i + 0.6 : (right ? i - 0.6 : i);
@@ -40,7 +42,6 @@ function createCamera() {
 
         camera.position.x = distanceCamera * Math.cos(MathUtils.degToRad(i));
         camera.position.z = distanceCamera * Math.sin(MathUtils.degToRad(i));
-
     }
 
     document.addEventListener("keydown", onCameraMove, false);
