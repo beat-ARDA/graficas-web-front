@@ -37,7 +37,7 @@ async function createModels(count, pathModel, left = true, right = false) {
     return await Promise.all(loadersModels);
 }
 
-async function loadSpaceships(scene, loop, shieldItem, hearthItem, bulletItem) {
+async function loadSpaceships(scene, loop, shieldItem, hearthItem) {
     let level = 3;
     let countLevel = 0;
     let distanceObjects = 10;
@@ -88,8 +88,7 @@ async function loadSpaceships(scene, loop, shieldItem, hearthItem, bulletItem) {
         _countDegreesHeroe,
         distanceObjects,
         shieldItem,
-        hearthItem,
-        bulletItem
+        hearthItem
     );
     //spaceShipHeroe.position.set(10, 0, 0);
 

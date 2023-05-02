@@ -59,8 +59,7 @@ function setupModelHeroe(
     _countDegreesHeroe,
     distanceObjects,
     shieldItem,
-    hearthItem,
-    bulletItem
+    hearthItem
 ) {
     /*///////////////////////////////////////////////////////////////////////////////////////
     /                                 Declaracion de variables                              /
@@ -155,46 +154,6 @@ function setupModelHeroe(
                 infoHearth.timeToCreate = 0;
                 dirHeroe.lifes++;
             }
-        }
-
-        /*///////////////////////////////////////////////////////////////////////////////////////
-        /                                  MANAGE BULLET ITEM                                   /
-        /*///////////////////////////////////////////////////////////////////////////////////////
-
-        if (!infoBullet.created)
-            infoBullet.timeToCreate += 0.08;
-
-        if (infoBullet.timeToCreate >= 10) {
-            scene.add(bulletItem);
-            infoBullet.created = true;
-            infoBullet.timeToCreate = 0;
-        }
-
-        if (bulletItem.position.y <= -5) {
-            scene.remove(bulletItem);
-            infoBullet.created = false;
-        }
-
-        //Colision bullet
-        if (infoBullet.created) {
-            let boxHeroe = new Box3().setFromObject(model);
-            let boxBullet = new Box3().setFromObject(bulletItem);
-            if (boxHeroe.intersectsBox(boxBullet)) {
-                scene.remove(bulletItem);
-                infoBullet.created = false;
-                infoBullet.timeToCreate = 0;
-                dirHeroe.hasBullet = true;
-            }
-        }
-
-        if (dirHeroe.hasBullet)
-            infoBullet.timeToHasBullet += 0.1;
-
-        if (infoBullet.timeToHasBullet >= 10) {
-            infoBullet.created = false;
-            infoBullet.timeToCreate = 0;
-            infoBullet.timeToHasBullet = 0;
-            dirHeroe.hasBullet = false;
         }
 
 
@@ -308,7 +267,6 @@ function setupModelHeroe(
         /*///////////////////////////////////////////////////////////////////////////////////////
 
         bullets.forEach((bulletInfo, index) => {
-
             if (bulletInfo.recentCreated) {
                 bulletInfo.count = countDegreesHeroe;
                 bulletInfo.recentCreated = false;

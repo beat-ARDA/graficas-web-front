@@ -1,15 +1,14 @@
 import { PerspectiveCamera } from 'three';
 import { MathUtils } from 'three';
-
-let left, right = false;
+import { infoCamera } from '../helpers/helpers';
 
 async function onCameraMove(event) {
     var keyCode = event.which;
 
     if (keyCode === 65) {
-        left = true;
+        infoCamera.left = true;
     } else if (keyCode === 68) {
-        right = true;
+        infoCamera.right = true;
     }
 };
 
@@ -17,15 +16,14 @@ async function onCameraStop(event) {
     var keyCode = event.which;
 
     if (keyCode === 65) {
-        left = false;
+        infoCamera.left = false;
     } else if (keyCode === 68) {
-        right = false;
+        infoCamera.right = false;
     }
 };
 
 function createCamera() {
-    let distanceCamera = 20;
-    let i = 90;
+
     const camera = new PerspectiveCamera(
         45,
         window.innerWidth / window.innerHeight,
@@ -33,15 +31,18 @@ function createCamera() {
         10000,
     );
 
-    camera.position.set(distanceCamera * Math.cos(MathUtils.degToRad(i)), 0, distanceCamera * Math.sin(MathUtils.degToRad(i)));
+    camera.position.set(
+        infoCamera.distance * Math.cos(MathUtils.degToRad(infoCamera.countDegrees)),
+        0,
+        infoCamera.distance * Math.sin(MathUtils.degToRad(infoCamera.countDegrees)));
 
     camera.tick = () => {
 
-        i = left ? i + 0.6 : (right ? i - 0.6 : i);
-        i = i >= 360 ? 0 : (i <= -360 ? 0 : i);
+        infoCamera.countDegrees = infoCamera.left ? infoCamera.countDegrees + 0.6 : (infoCamera.right ? infoCamera.countDegrees - 0.6 : infoCamera.countDegrees);
+        infoCamera.countDegrees = infoCamera.countDegrees >= 360 ? 0 : (infoCamera.countDegrees <= -360 ? 0 : infoCamera.countDegrees);
 
-        camera.position.x = distanceCamera * Math.cos(MathUtils.degToRad(i));
-        camera.position.z = distanceCamera * Math.sin(MathUtils.degToRad(i));
+        camera.position.x = infoCamera.distance * Math.cos(MathUtils.degToRad(infoCamera.countDegrees));
+        camera.position.z = infoCamera.distance * Math.sin(MathUtils.degToRad(infoCamera.countDegrees));
     }
 
     document.addEventListener("keydown", onCameraMove, false);

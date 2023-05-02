@@ -2,7 +2,7 @@ import { DirectionalLight } from 'three';
 
 function createLights() {
     const light = new DirectionalLight('white', 8);
-    light.position.set(10, 10, 10);
+    light.position.set(0, 10, 0);
 
     return light;
 }

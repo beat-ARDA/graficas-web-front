@@ -20,7 +20,9 @@ export default function Game() {
 
     return (
         <>
-            <div className="game-background" id='scene-container'></div>
+            <div className="game-background" id='scene-container'>
+                <h5 class="text-scene">TEXTO SOBRE LA ESCENA</h5>
+            </div>
             <div id="myModal" class="modal" tabindex="-1">
                 <div class="modal-dialog bs-dark">
                     <div class="modal-content">
@@ -32,7 +34,6 @@ export default function Game() {
                             <button type="button" class="btn btn-secondary mt-2" data-bs-dismiss="modal">Reaunudar</button>
                             <button type="button" class="btn btn-primary mt-2 " data-bs-dismiss="modal">Salir</button>
                         </div>
-
                     </div>
                 </div>
             </div>

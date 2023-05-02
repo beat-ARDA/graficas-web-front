@@ -9,7 +9,15 @@ import { createControls } from '../systems/controls.js';
 import { loadBuilding } from '../components/building/building.js';
 import { createShield } from '../components/items/shield.js';
 import { createHearth } from '../components/items/hearth.js';
-import { createBullet } from '../components/items/bullet.js';
+import { loadHearthItem } from '../components/items/hearthItem/hearthItem.js';
+import { loadBulletItem } from '../components/items/bulletItem/bulletItem.js';
+import { loadShieldItem } from '../components/items/shieldItem/shieldItem.js';
+import { loadHeroe } from '../components/heroe/heroe.js';
+import { loadBulletHeroe } from '../components/bulletHeroe/bulletHeroe.js';
+import { infoBulletHeroe, infoBulletVillain, infoHeroe, infoVillain } from '../helpers/helpers.js';
+import { MathUtils, Vector3 } from 'three';
+import { loadVillain } from '../components/villain/villain.js';
+import { loadBulletVillain } from '../components/bulletVillain/bulletVillain.js';
 
 let camera;
 let renderer;
@@ -37,21 +45,49 @@ class World {
     }
 
     async init() {
-        const { building } = await loadBuilding();
-        const shieldItem = await createShield(scene);
-        const hearthItem = await createHearth(scene);
-        const bulletItem = await createBullet(scene);
-        const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene, loop, shieldItem, hearthItem, bulletItem);
 
-        loop.updatables.push(spaceShipHeroe, building, shieldItem, hearthItem, bulletItem);
-        scene.add(spaceShipHeroe, building);
+        const { building } = await loadBuilding();
+        //const shieldItem = await createShield(scene);
+        //const hearthItem = await createHearth(scene);
+        const hearthItem = await loadHearthItem(scene);
+        const bulletItem = await loadBulletItem(scene);
+        const shieldItem = await loadShieldItem(scene);
+        const [villain, villainData] = await loadVillain(scene, loop, true, false, 50, 0);
+        infoVillain.model = villainData;
+
+        const heroe = await loadHeroe(scene, loop);
+
+        infoHeroe.model = heroe;
+
+        const [bulletHeroe, dataHeroe] = await loadBulletHeroe(
+            new Vector3(Math.cos(MathUtils.degToRad(45)), 0, Math.sin(MathUtils.degToRad(45))),
+            scene,
+            45,
+            false,
+            false,
+            false,
+            false);
+
+        infoBulletHeroe.bullet = dataHeroe;
+
+        const [bulletVillain, bulletVillainData] = await loadBulletVillain(
+            new Vector3(Math.cos(MathUtils.degToRad(45)), 0, Math.sin(MathUtils.degToRad(45))),
+            scene,
+            45,
+            false,
+            false);
+
+        infoBulletVillain.bullet = bulletVillainData;
+        //const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene, loop, shieldItem, hearthItem);
+        scene.add(heroe, building, bulletItem, hearthItem, shieldItem);
+        loop.updatables.push(heroe, building, bulletItem, hearthItem, shieldItem,);
 
         //Level 1 OnePlayer
-        villainModelsArray.forEach((villain, indexVillain) => {
-            loop.updatables.push(villain);
-            if (indexVillain <= 2)
-                scene.add(villain);
-        });
+        // villainModelsArray.forEach((villain, indexVillain) => {
+        //     loop.updatables.push(villain);
+        //     if (indexVillain <= 2)
+        //         scene.add(villain);
+        // });
     }
 
     start() {

@@ -7,7 +7,7 @@ async function createBullet(scene) {
 
     let degrees = 0;
     let posY = 5;
-    const shieldData = await loader.loadAsync('/models/parrot.glb');
+    const shieldData = await loader.loadAsync('/models/bullet.glb');
     const model = shieldData.scene.children[0];
     model.name = "bulletItem";
     model.position.x = 10 * Math.cos(MathUtils.degToRad(180));
