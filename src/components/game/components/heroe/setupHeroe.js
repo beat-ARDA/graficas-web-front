@@ -329,6 +329,7 @@ function setupHeroe(data, scene, loop) {
     let lastExecutionTime = 0;
 
     async function onHeroeMove(event) {
+        
         var keyCode = event.which;
         const now = Date.now();
 

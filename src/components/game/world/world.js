@@ -1,4 +1,3 @@
-import { loadSpaceships } from '../components/spaceships/spaceships.js';
 import { createCamera } from '../components/camera.js';
 import { createScene } from '../components/scene.js';
 import { createLights } from '../components/lights.js';
@@ -7,8 +6,6 @@ import { Resizer } from '../systems/Reziser.js';
 import { Loop } from '../systems/Loop.js';
 import { createControls } from '../systems/controls.js';
 import { loadBuilding } from '../components/building/building.js';
-import { createShield } from '../components/items/shield.js';
-import { createHearth } from '../components/items/hearth.js';
 import { loadHearthItem } from '../components/items/hearthItem/hearthItem.js';
 import { loadBulletItem } from '../components/items/bulletItem/bulletItem.js';
 import { loadShieldItem } from '../components/items/shieldItem/shieldItem.js';
@@ -18,6 +15,10 @@ import { infoBulletHeroe, infoBulletVillain, infoHeroe, infoVillain } from '../h
 import { MathUtils, Vector3 } from 'three';
 import { loadVillain } from '../components/villain/villain.js';
 import { loadBulletVillain } from '../components/bulletVillain/bulletVillain.js';
+import { ambientLight } from '../components/lights/ambiental.js';
+import { spotLight } from '../components/lights/spot.js';
+import { directionalLight } from '../components/lights/directional.js';
+import { lifesGui } from '../components/gui/lifesGui.js';
 
 let camera;
 let renderer;
@@ -33,10 +34,14 @@ class World {
         loop = new Loop(camera, scene, renderer);
         container.append(renderer.domElement);
         controls = createControls(camera, renderer.domElement);
-        const light = createLights();
+        camera.add(lifesGui());
+        scene.add(ambientLight());
+        scene.add(directionalLight());
+        scene.add(spotLight(new Vector3(20, 0, 0), '#FFFFFF'));
+        scene.add(spotLight(new Vector3(-20, 0, 0), '#FFFFFF'));
+        scene.add(spotLight(new Vector3(0, 0, 20), '#FFFFFF'));
+        scene.add(spotLight(new Vector3(0, 0, -20), '#FFFFFF'));
         loop.updatables.push(camera, controls);
-        scene.add(light);
-
         const resizer = new Resizer(container, camera, renderer);
     }
 
@@ -47,8 +52,6 @@ class World {
     async init() {
 
         const { building } = await loadBuilding();
-        //const shieldItem = await createShield(scene);
-        //const hearthItem = await createHearth(scene);
         const hearthItem = await loadHearthItem(scene);
         const bulletItem = await loadBulletItem(scene);
         const shieldItem = await loadShieldItem(scene);
@@ -78,16 +81,8 @@ class World {
             false);
 
         infoBulletVillain.bullet = bulletVillainData;
-        //const { spaceShipHeroe, villainModelsArray } = await loadSpaceships(scene, loop, shieldItem, hearthItem);
         scene.add(heroe, building, bulletItem, hearthItem, shieldItem);
         loop.updatables.push(heroe, building, bulletItem, hearthItem, shieldItem,);
-
-        //Level 1 OnePlayer
-        // villainModelsArray.forEach((villain, indexVillain) => {
-        //     loop.updatables.push(villain);
-        //     if (indexVillain <= 2)
-        //         scene.add(villain);
-        // });
     }
 
     start() {
