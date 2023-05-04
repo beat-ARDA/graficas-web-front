@@ -1,4 +1,4 @@
-import { PerspectiveCamera } from 'three';
+import { OrthographicCamera, PerspectiveCamera } from 'three';
 import { MathUtils } from 'three';
 import { infoCamera } from '../helpers/helpers';
 
@@ -37,7 +37,6 @@ function createCamera() {
         infoCamera.distance * Math.sin(MathUtils.degToRad(infoCamera.countDegrees)));
 
     camera.tick = () => {
-
         infoCamera.countDegrees = infoCamera.left ? infoCamera.countDegrees + 0.6 : (infoCamera.right ? infoCamera.countDegrees - 0.6 : infoCamera.countDegrees);
         infoCamera.countDegrees = infoCamera.countDegrees >= 360 ? 0 : (infoCamera.countDegrees <= -360 ? 0 : infoCamera.countDegrees);
 

@@ -27,6 +27,7 @@ let scene;
 let loop;
 
 class World {
+
     constructor(container) {
         camera = createCamera();
         scene = createScene();
@@ -34,7 +35,6 @@ class World {
         loop = new Loop(camera, scene, renderer);
         container.append(renderer.domElement);
         controls = createControls(camera, renderer.domElement);
-        camera.add(lifesGui());
         scene.add(ambientLight());
         scene.add(directionalLight());
         scene.add(spotLight(new Vector3(20, 0, 0), '#FFFFFF'));
@@ -46,6 +46,7 @@ class World {
     }
 
     render() {
+        renderer.activeCamera = camera;
         renderer.render(scene, camera);
     }
 

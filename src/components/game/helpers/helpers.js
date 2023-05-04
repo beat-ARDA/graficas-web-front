@@ -58,6 +58,14 @@ export const infoCamera = {
   "countDegrees": cameraHeroePosition
 }
 
+export const infoGui = {
+  "left": false,
+  "right": false,
+  "distance": 19,
+  "posY": 2,
+  "countDegrees": cameraHeroePosition
+}
+
 export const infoBulletHeroe = {
   "bullet": null
 }
