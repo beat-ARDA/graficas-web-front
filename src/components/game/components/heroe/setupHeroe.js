@@ -12,6 +12,7 @@ import {
 } from "../../helpers/helpers";
 import { setupBulletHeroe } from "../bulletHeroe/setupBulletHeroe";
 import { setupVillain } from "../villain/setupVillain";
+import { colisionHeroe, colisionVillain } from "../event";
 
 function setupHeroe(data, scene, loop) {
 
@@ -301,11 +302,15 @@ function setupHeroe(data, scene, loop) {
                 scene.remove(villain);
                 villainsToDelete.push(villain);
                 indexVillainsToDelete.push(index);
-                
-                infoGame.villainsDeleted++;
 
-                if (!infoHeroe.hasShield)
+                infoGame.villainsDeleted++;
+                infoGame.score += infoVillain.score;
+                colisionVillain();
+
+                if (!infoHeroe.hasShield) {
                     infoHeroe.lifes--;
+                    colisionHeroe();
+                }
 
                 if (infoGame.villainsDeleted === 6) {
                     infoGame.level = 2;
@@ -329,7 +334,7 @@ function setupHeroe(data, scene, loop) {
     let lastExecutionTime = 0;
 
     async function onHeroeMove(event) {
-        
+
         var keyCode = event.which;
         const now = Date.now();
 

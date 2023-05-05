@@ -1,6 +1,9 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import './game.css';
 import { World } from './world/world.js';
+import { colisionDispatcher } from "./components/event";
+import { infoGame, infoHeroe } from "./helpers/helpers";
+
 
 async function main() {
     const container = document.querySelector('#scene-container');
@@ -12,16 +15,35 @@ async function main() {
 
 export default function Game() {
 
+    const [lifes, setLifes] = useState(infoHeroe.lifes);
+    const [score, setScore] = useState(infoGame.score);
+
     useEffect(() => {
-        main().catch((err) => {
+        main().then(() => {
+
+        }).catch((err) => {
             console.error(err);
+        });
+
+        colisionDispatcher.addEventListener('colisionHeroe', function (event) {
+            setLifes(event.data);
+        });
+
+        colisionDispatcher.addEventListener('colisionVillain', function (event) {
+            setScore(event.data);
         });
     }, []);
 
     return (
         <>
             <div className="game-background" id='scene-container'>
-                <h5 class="text-scene">TEXTO SOBRE LA ESCENA</h5>
+                <h5 class="life-scene gui-text">Lifes: </h5>
+                <img className={`${lifes === 3 ? 'img-lifes img-pos' : 'img-none'}`} src="images/0v.png" />
+                <img className={`${lifes === 2 ? 'img-lifes img-pos' : 'img-none'}`} src="images/1v.png" />
+                <img className={`${lifes === 1 ? 'img-lifes img-pos' : 'img-none'}`} src="images/2v.png" />
+                <img className={`${lifes === 0 ? 'img-lifes img-pos' : 'img-none'}`} src="images/3v.png" />
+
+                <h5 class="score-scene gui-text">Score: {score}</h5>
             </div>
             <div id="myModal" class="modal" tabindex="-1">
                 <div class="modal-dialog bs-dark">

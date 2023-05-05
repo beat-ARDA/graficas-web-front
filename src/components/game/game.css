@@ -1,3 +1,8 @@
+@font-face {
+    font-family: "pixel";
+    src: url("../../../public/fonts/04B_30__.TTF");
+}
+
 .game-background {
     /* background-image: url('https://graficas-web-front.vercel.app/images/juego-fondo.png'); */
     /* background-image: url('http://localhost:3000/images/juego-fondo.png');
@@ -8,8 +13,35 @@
     width: 100%;
 }
 
-.text-scene {
+.gui-text {
+    font-family: "pixel";
+}
+
+.life-scene {
     position: absolute;
     top: 1.2rem;
-    color: white;
+    left: 1rem;
+    color: yellow;
+}
+
+.score-scene {
+    position: absolute;
+    top: 1.2rem;
+    right: 8rem;
+    color: yellow;
+}
+
+.img-pos {
+    position: absolute;
+    top: 0.1rem;
+    left: 6rem;
+}
+
+.img-lifes {
+    width: 5rem;
+    height: 4rem;
+}
+
+.img-none {
+    display: none;
 }

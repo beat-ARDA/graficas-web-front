@@ -1,6 +1,7 @@
 import { MathUtils } from "three";
-import { villainsArray, bulletHeroeToDelete, villainsToDelete, infoGame } from "../../helpers/helpers";
+import { villainsArray, bulletHeroeToDelete, villainsToDelete, infoGame, infoVillain } from "../../helpers/helpers";
 import { Box3 } from "three";
+import { colisionVillain } from "../event";
 
 function setupBulletHeroe(
     data,
@@ -86,6 +87,8 @@ function setupBulletHeroe(
                 indexVillainsToDelete.push(index);
 
                 infoGame.villainsDeleted++;
+                infoGame.score += infoVillain.score;
+                colisionVillain();
 
                 if (infoGame.villainsDeleted === 6) {
                     infoGame.level = 2;

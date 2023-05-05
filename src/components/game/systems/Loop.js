@@ -1,4 +1,5 @@
 import { Clock } from "three";
+import { infoHeroe } from "../helpers/helpers";
 const clock = new Clock();
 
 class Loop {

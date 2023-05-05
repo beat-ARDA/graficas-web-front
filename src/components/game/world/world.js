@@ -18,7 +18,6 @@ import { loadBulletVillain } from '../components/bulletVillain/bulletVillain.js'
 import { ambientLight } from '../components/lights/ambiental.js';
 import { spotLight } from '../components/lights/spot.js';
 import { directionalLight } from '../components/lights/directional.js';
-import { lifesGui } from '../components/gui/lifesGui.js';
 
 let camera;
 let renderer;

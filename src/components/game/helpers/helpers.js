@@ -12,11 +12,13 @@ export const infoGame = {
   "levels": 3,
   "level": 1,
   "createdVillains": false,
-  "villainsDeleted": 0
+  "villainsDeleted": 0,
+  "score": 0
 }
 
 export const infoVillain = {
-  "model": null
+  "model": null,
+  "score": 3,
 }
 
 export let villainsArray = [];
@@ -58,14 +60,6 @@ export const infoCamera = {
   "countDegrees": cameraHeroePosition
 }
 
-export const infoGui = {
-  "left": false,
-  "right": false,
-  "distance": 19,
-  "posY": 2,
-  "countDegrees": cameraHeroePosition
-}
-
 export const infoBulletHeroe = {
   "bullet": null
 }
@@ -73,3 +67,5 @@ export const infoBulletHeroe = {
 export const infoBulletVillain = {
   "bullet": null
 }
+
+export const renderer_ = null;

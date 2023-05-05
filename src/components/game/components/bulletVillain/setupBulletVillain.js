@@ -1,5 +1,6 @@
 import { Box3, MathUtils } from "three";
 import { infoHeroe, bulletVillainToDelete } from "../../helpers/helpers";
+import { colisionHeroe } from "../event";
 
 function setupBulletVillain(
     data,
@@ -62,8 +63,10 @@ function setupBulletVillain(
         let boxBulletVillain = new Box3().setFromObject(bulletVillain);
 
         if (boxBulletVillain.intersectsBox(boxHeroe)) {
-            if (!infoHeroe.hasShield)
+            if (!infoHeroe.hasShield) {
                 infoHeroe.lifes--;
+                colisionHeroe();
+            }
             bulletVillainToDelete.push(bulletVillain);
         }
     };

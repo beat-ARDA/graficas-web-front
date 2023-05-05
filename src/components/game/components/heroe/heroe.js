@@ -8,6 +8,7 @@ async function loadHeroe(scene, loop) {
     const heroeData = await loader.loadAsync('/models/nave.glb');
 
     const heroe = setupHeroe(heroeData, scene, loop);
+    console.log(heroe);
 
     return heroe;
 }
