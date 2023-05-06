@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './menu.css';
 
 export default function Menu() {
+
     const navigate = useNavigate();
 
     return (

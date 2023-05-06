@@ -1,5 +1,6 @@
 import { Box3, MathUtils } from "three";
-import { infoHeroe } from "../../../helpers/helpers";
+import { infoGame, infoHeroe } from "../../../helpers/helpers";
+import { AudioListener, AudioLoader, Audio } from "three";
 
 function setupBulletItem(data, scene) {
     let distanceModel = 10;
@@ -21,6 +22,11 @@ function setupBulletItem(data, scene) {
 
     bulletItem.scale.set(scaleModel, scaleModel, scaleModel);
 
+    const listener = new AudioListener();
+
+    scene.add(listener);
+    const audioLoader = new AudioLoader();
+    const audio = new Audio(listener);
 
     bulletItem.tick = (delta) => {
         //GIRAR BULLET
@@ -41,6 +47,14 @@ function setupBulletItem(data, scene) {
         let boxBulletItem = new Box3().setFromObject(bulletItem);
 
         if (boxHeroe.intersectsBox(boxBulletItem)) {
+            audio.stop();
+            audioLoader.load('sounds/item.mp3', (buffer) => {
+                audio.setBuffer(buffer);
+                audio.setLoop(false);
+                audio.setVolume(infoGame.volume);
+                audio.play();
+
+            });
             infoHeroe.hasBullet = true;
             countPositionYModel = positionYModel;
         }

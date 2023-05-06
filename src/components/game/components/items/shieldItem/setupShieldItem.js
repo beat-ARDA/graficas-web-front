@@ -1,5 +1,6 @@
 import { Box3, MathUtils } from "three";
-import { infoHeroe } from "../../../helpers/helpers";
+import { infoGame, infoHeroe } from "../../../helpers/helpers";
+import { AudioListener, AudioLoader, Audio } from "three";
 
 function setupShieldItem(data, scene) {
     let distanceModel = 10;
@@ -21,6 +22,11 @@ function setupShieldItem(data, scene) {
 
     shieldItem.scale.set(scaleModel, scaleModel, scaleModel);
 
+    const listener = new AudioListener();
+
+    scene.add(listener);
+    const audioLoader = new AudioLoader();
+    const audio = new Audio(listener);
 
     shieldItem.tick = (delta) => {
         //GIRAR BULLET
@@ -41,6 +47,15 @@ function setupShieldItem(data, scene) {
         let boxShieldItem = new Box3().setFromObject(shieldItem);
 
         if (boxHeroe.intersectsBox(boxShieldItem)) {
+            audio.stop();
+
+            audioLoader.load('sounds/item.mp3', (buffer) => {
+                audio.setBuffer(buffer);
+                audio.setLoop(false);
+                audio.setVolume(infoGame.volume);
+                audio.play();
+
+            });
             infoHeroe.hasShield = true;
             countPositionYModel = positionYModel;
         }

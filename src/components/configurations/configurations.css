@@ -1,3 +1,12 @@
+@font-face {
+    font-family: "pixel";
+    src: url("../../../public/fonts/04B_30__.TTF");
+}
+
+.font-pixel {
+    font-family: 'pixel';
+}
+
 .background-configurations {
     /* background-image: url('/images/ajustes-fondo.png'); */
     background-image: url('https://graficas-web-front.vercel.app/images/ajustes-fondo.png');
@@ -49,7 +58,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    height: 25%;
+    height: 80%;
     width: 25%;
 }
 
@@ -58,7 +67,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    height: 25%;
+    height: 80%;
     width: 25%;
 }
 
@@ -67,7 +76,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    height: 25%;
+    height: 80%;
     width: 25%;
 }
 
@@ -76,7 +85,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    height: 25%;
+    height: 80%;
     width: 25%;
 }
 
@@ -85,7 +94,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    height: 25%;
+    height: 80%;
     width: 25%;
 }
 
@@ -94,6 +103,12 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    height: 25%;
+    height: 80%;
     width: 25%;
+}
+
+.scene-selected {
+    background-color: yellow;
+    color: black !important;
+    font-weight: bold;
 }

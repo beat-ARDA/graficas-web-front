@@ -13,9 +13,10 @@ import {
 import { setupBulletHeroe } from "../bulletHeroe/setupBulletHeroe";
 import { setupVillain } from "../villain/setupVillain";
 import { colisionHeroe, colisionVillain } from "../event";
+import { AudioListener, AudioLoader, Audio } from "three";
+import { AnimationMixer } from "three";
 
 function setupHeroe(data, scene, loop) {
-
     const heroe = data.scene.children[0];
     let indexVillainsToDelete = [];
     let materialShield = new MeshStandardMaterial({ color: 0xFFFF00 });
@@ -25,14 +26,33 @@ function setupHeroe(data, scene, loop) {
         infoHeroe.positionY,
         infoHeroe.distance * Math.sin(MathUtils.degToRad(infoHeroe.countDegrees)));
 
-    heroe.rotation.z = MathUtils.degToRad(infoHeroe.degreesRotation);
+    heroe.rotation.y = MathUtils.degToRad(infoHeroe.degreesRotation);
 
     heroe.scale.set(infoHeroe.scale, infoHeroe.scale, infoHeroe.scale);
 
     infoHeroe.material = heroe.material;
 
+    const listener = new AudioListener();
+
+    scene.add(listener);
+    const audioLoader = new AudioLoader();
+    const audio = new Audio(listener);
+
+    const clip = data.animations[0];
+    const mixer = new AnimationMixer(heroe);
+    const action = mixer.clipAction(clip);
+    action.play(data.animations[0]);
+
     heroe.tick = (delta) => {
         if (infoGame.villainsDeleted === 27) {
+            audio.stop();
+            audioLoader.load('sounds/win.mp3', (buffer) => {
+                audio.setBuffer(buffer);
+                audio.setLoop(false);
+                audio.setVolume(1);
+                audio.play();
+            });
+            loop.stop();
             loop.stop();
         }
         /*///////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +81,14 @@ function setupHeroe(data, scene, loop) {
         /                                     VALIDATE LIFES                                   //
         /*///////////////////////////////////////////////////////////////////////////////////////
         if (infoHeroe.lifes === 0) {
+            audio.stop();
+
+            audioLoader.load('sounds/game-over.mp3', (buffer) => {
+                audio.setBuffer(buffer);
+                audio.setLoop(false);
+                audio.setVolume(1);
+                audio.play();
+            });
             loop.stop();
         }
 
@@ -69,15 +97,16 @@ function setupHeroe(data, scene, loop) {
         /*///////////////////////////////////////////////////////////////////////////////////////
         if (infoGame.level === 1 && !infoGame.createdVillains) {
             for (let i = 0; i < 3; i++) {
+
                 const cloneVillain = infoVillain.model.scene.children[0].clone();
                 const villain = setupVillain(
                     scene,
                     loop,
                     cloneVillain,
-                    true,
                     false,
+                    true,
                     infoHeroe.countDegrees + 90,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -91,10 +120,10 @@ function setupHeroe(data, scene, loop) {
                     scene,
                     loop,
                     cloneVillain,
-                    true,
                     false,
+                    true,
                     infoHeroe.countDegrees - 90,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -115,7 +144,7 @@ function setupHeroe(data, scene, loop) {
                     true,
                     false,
                     infoHeroe.countDegrees + 90,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -132,7 +161,7 @@ function setupHeroe(data, scene, loop) {
                     true,
                     false,
                     infoHeroe.countDegrees - 90,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -149,7 +178,7 @@ function setupHeroe(data, scene, loop) {
                     true,
                     false,
                     infoHeroe.countDegrees + 180,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -170,7 +199,7 @@ function setupHeroe(data, scene, loop) {
                     true,
                     false,
                     infoHeroe.countDegrees + 45,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -187,7 +216,7 @@ function setupHeroe(data, scene, loop) {
                     true,
                     false,
                     infoHeroe.countDegrees + 90,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -204,7 +233,7 @@ function setupHeroe(data, scene, loop) {
                     true,
                     false,
                     infoHeroe.countDegrees + 135,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
@@ -221,13 +250,12 @@ function setupHeroe(data, scene, loop) {
                     true,
                     false,
                     infoHeroe.countDegrees + 180,
-                    i);
+                    i, infoVillain.animations);
 
                 scene.add(villain);
                 loop.updatables.push(villain);
 
                 villainsArray.push(villain);
-                console.log(villainsArray);
             }
 
             infoGame.createdVillains = true;
@@ -237,10 +265,14 @@ function setupHeroe(data, scene, loop) {
         /                                        MOVE HEROE                                    //
         /*///////////////////////////////////////////////////////////////////////////////////////
         //Aumentar contador de grados
-        if (infoHeroe.left)
+        if (infoHeroe.left) {
             infoHeroe.countDegrees += 0.6;
-        else if (infoHeroe.right)
+            mixer.update(delta);
+        }
+        else if (infoHeroe.right) {
             infoHeroe.countDegrees -= 0.6;
+            mixer.update(delta);
+        }
         //Subir o bajar nave
         if (infoHeroe.down)
             heroe.position.y -= 0.1;
@@ -248,9 +280,9 @@ function setupHeroe(data, scene, loop) {
             heroe.position.y += 0.1;
         //Rotar la nave
         if (infoHeroe.right)
-            heroe.rotation.z = infoHeroe.distance * Math.sin(MathUtils.degToRad((180 + infoHeroe.countDegrees) * 0.102));
+            heroe.rotation.y = -infoHeroe.distance * Math.sin(MathUtils.degToRad((180 + infoHeroe.countDegrees) * 0.102));
         else if (infoHeroe.left)
-            heroe.rotation.z = infoHeroe.distance * Math.sin(MathUtils.degToRad(infoHeroe.countDegrees * 0.108));
+            heroe.rotation.y = -infoHeroe.distance * Math.sin(MathUtils.degToRad(infoHeroe.countDegrees * 0.108));
         //Mover heroe a la derecha o izquierda
         if (infoHeroe.left || infoHeroe.right) {
 
@@ -299,6 +331,14 @@ function setupHeroe(data, scene, loop) {
             let boxVillain = new Box3().setFromObject(villain);
 
             if (boxVillain.intersectsBox(boxHeroe)) {
+                audio.stop();
+
+                audioLoader.load('sounds/colision.mp3', (buffer) => {
+                    audio.setBuffer(buffer);
+                    audio.setLoop(false);
+                    audio.setVolume(1);
+                    audio.play();
+                });
                 scene.remove(villain);
                 villainsToDelete.push(villain);
                 indexVillainsToDelete.push(index);
@@ -354,7 +394,14 @@ function setupHeroe(data, scene, loop) {
 
         if (now - lastExecutionTime >= 100) {
             if (keyCode === keyboards.space) {
+                audio.stop();
                 //GENERAR BULLETS HEROE
+                audioLoader.load('sounds/laser-sound.mp3', (buffer) => {
+                    audio.setBuffer(buffer);
+                    audio.setLoop(false);
+                    audio.setVolume(infoGame.volume);
+                    audio.play();
+                });
                 if (infoHeroe.hasBullet) {
                     for (let i = 0; i < 3; i++) {
                         const cloneBulletHeroe = infoBulletHeroe.bullet.scene.children[0].clone();
@@ -384,7 +431,6 @@ function setupHeroe(data, scene, loop) {
                         infoHeroe.viewRight,
                         false,
                         false);
-
                     scene.add(bulletHeroe);
                     loop.updatables.push(bulletHeroe);
                 }

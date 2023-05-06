@@ -1,6 +1,8 @@
 import { Box3, MathUtils } from "three";
 import { infoHeroe } from "../../../helpers/helpers";
 import { colisionHeroe } from "../../event";
+import { AudioListener, AudioLoader, Audio } from "three";
+import { infoGame } from "../../../helpers/helpers";
 
 function setupHearthItem(data, scene) {
     let distanceModel = 10;
@@ -21,6 +23,12 @@ function setupHearthItem(data, scene) {
     hearthItem.rotation.z = MathUtils.degToRad(degreesRotationModel);
 
     hearthItem.scale.set(scaleModel, scaleModel, scaleModel);
+
+    const listener = new AudioListener();
+
+    scene.add(listener);
+    const audioLoader = new AudioLoader();
+    const audio = new Audio(listener);
 
     hearthItem.tick = (delta) => {
 
@@ -45,6 +53,15 @@ function setupHearthItem(data, scene) {
         let boxHearthItem = new Box3().setFromObject(hearthItem);
 
         if (boxHeroe.intersectsBox(boxHearthItem)) {
+            audio.stop();
+
+            audioLoader.load('sounds/item.mp3', (buffer) => {
+                audio.setBuffer(buffer);
+                audio.setLoop(false);
+                audio.setVolume(infoGame.volume);
+                audio.play();
+
+            });
             infoHeroe.lifes++;
             colisionHeroe();
             countPositionYModel = positionYModel;

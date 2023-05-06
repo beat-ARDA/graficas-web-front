@@ -4,7 +4,6 @@ import { World } from './world/world.js';
 import { colisionDispatcher } from "./components/event";
 import { infoGame, infoHeroe } from "./helpers/helpers";
 
-
 async function main() {
     const container = document.querySelector('#scene-container');
     const world = new World(container);
@@ -32,6 +31,7 @@ export default function Game() {
         colisionDispatcher.addEventListener('colisionVillain', function (event) {
             setScore(event.data);
         });
+
     }, []);
 
     return (

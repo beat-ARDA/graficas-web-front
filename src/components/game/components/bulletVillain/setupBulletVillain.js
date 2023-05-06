@@ -1,6 +1,7 @@
 import { Box3, MathUtils } from "three";
 import { infoHeroe, bulletVillainToDelete } from "../../helpers/helpers";
 import { colisionHeroe } from "../event";
+import { AudioListener, AudioLoader, Audio } from "three";
 
 function setupBulletVillain(
     data,
@@ -21,7 +22,7 @@ function setupBulletVillain(
     let countDistanceBullet = 0;
     let rotation = 90;
     let scale = 0.06;
-    let speedBullet = 0.4;
+    let speedBullet = 0.8;
 
     bulletVillain.position.x = villainPos.x;
     bulletVillain.position.y = villainPos.y;
@@ -30,6 +31,12 @@ function setupBulletVillain(
     bulletVillain.rotation.z = MathUtils.degToRad(rotation);
 
     bulletVillain.scale.set(scale, scale, scale);
+
+    const listener = new AudioListener();
+
+    scene.add(listener);
+    const audioLoader = new AudioLoader();
+    const audio = new Audio(listener);
 
     bulletVillain.tick = (delta) => {
         //////////////////////////////////////////////////////////////////////////////
@@ -64,6 +71,15 @@ function setupBulletVillain(
 
         if (boxBulletVillain.intersectsBox(boxHeroe)) {
             if (!infoHeroe.hasShield) {
+                audio.stop();
+
+                audioLoader.load('sounds/colision.mp3', (buffer) => {
+                    audio.setBuffer(buffer);
+                    audio.setLoop(false);
+                    audio.setVolume(1);
+                    audio.play();
+
+                });
                 infoHeroe.lifes--;
                 colisionHeroe();
             }

@@ -13,11 +13,15 @@ export const infoGame = {
   "level": 1,
   "createdVillains": false,
   "villainsDeleted": 0,
-  "score": 0
+  "score": 0,
+  "scene": 1,
+  "volume": 0.2,
+  "dificulty": 'easy'
 }
 
 export const infoVillain = {
   "model": null,
+  "animations": null,
   "score": 3,
 }
 
