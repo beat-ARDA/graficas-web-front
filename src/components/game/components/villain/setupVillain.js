@@ -74,7 +74,7 @@ function setupVillain(scene, loop, data, _left, _right, _countDegrees, _posY, an
             if (animations !== null)
                 mixer.update(delta);
         }
-        
+
         if (infoGame.dificulty === 'medium') {
             if (up) {
                 countPosY += 0.05;
@@ -103,7 +103,6 @@ function setupVillain(scene, loop, data, _left, _right, _countDegrees, _posY, an
 
         villain.position.x = distance * Math.cos(MathUtils.degToRad(countDegrees));
         villain.position.z = distance * Math.sin(MathUtils.degToRad(countDegrees));
-
     };
 
     return villain;

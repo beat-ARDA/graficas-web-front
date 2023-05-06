@@ -5,7 +5,8 @@ export const keyboards = {
   "s": 83,
   "a": 65,
   "d": 68,
-  "space": 32
+  "space": 32,
+  "esc": 27
 }
 
 export const infoGame = {
