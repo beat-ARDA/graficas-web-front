@@ -1,5 +1,6 @@
 import { Box3, MathUtils } from "three";
 import { infoHeroe } from "../../../helpers/helpers";
+import { colisionHeroe } from "../../event";
 
 function setupHearthItem(data, scene) {
     let distanceModel = 10;
@@ -45,6 +46,7 @@ function setupHearthItem(data, scene) {
 
         if (boxHeroe.intersectsBox(boxHearthItem)) {
             infoHeroe.lifes++;
+            colisionHeroe();
             countPositionYModel = positionYModel;
         }
     };

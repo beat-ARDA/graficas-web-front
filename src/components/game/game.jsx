@@ -38,11 +38,11 @@ export default function Game() {
         <>
             <div className="game-background" id='scene-container'>
                 <h5 class="life-scene gui-text">Lifes: </h5>
-                <img className={`${lifes === 3 ? 'img-lifes img-pos' : 'img-none'}`} src="images/0v.png" />
+                <img className={`${lifes >= 3 ? 'img-lifes img-pos' : 'img-none'}`} src="images/0v.png" />
                 <img className={`${lifes === 2 ? 'img-lifes img-pos' : 'img-none'}`} src="images/1v.png" />
                 <img className={`${lifes === 1 ? 'img-lifes img-pos' : 'img-none'}`} src="images/2v.png" />
                 <img className={`${lifes === 0 ? 'img-lifes img-pos' : 'img-none'}`} src="images/3v.png" />
-
+                <small className={`${lifes > 3 ? 'extra-life-scene gui-text' : 'img-none'}`}>+ {lifes - 3} extra</small>
                 <h5 class="score-scene gui-text">Score: {score}</h5>
             </div>
             <div id="myModal" class="modal" tabindex="-1">

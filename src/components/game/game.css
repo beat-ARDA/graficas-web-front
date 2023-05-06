@@ -31,6 +31,14 @@
     color: yellow;
 }
 
+.extra-life-scene {
+    position: absolute;
+    top: 1.2rem;
+    left: 11rem;
+    color: yellow;
+}
+
+
 .img-pos {
     position: absolute;
     top: 0.1rem;
