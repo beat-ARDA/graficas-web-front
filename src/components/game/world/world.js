@@ -1,6 +1,5 @@
 import { createCamera } from '../components/camera.js';
 import { createScene } from '../components/scene.js';
-import { createLights } from '../components/lights.js';
 import { createRenderer } from '../systems/renderer.js';
 import { Resizer } from '../systems/Reziser.js';
 import { Loop } from '../systems/Loop.js';
@@ -11,7 +10,7 @@ import { loadBulletItem } from '../components/items/bulletItem/bulletItem.js';
 import { loadShieldItem } from '../components/items/shieldItem/shieldItem.js';
 import { loadHeroe } from '../components/heroe/heroe.js';
 import { loadBulletHeroe } from '../components/bulletHeroe/bulletHeroe.js';
-import { infoBulletHeroe, infoBulletVillain, infoGame, infoHeroe, infoVillain } from '../helpers/helpers.js';
+import { infoBulletHeroe, infoBulletTwoPlayer, infoBulletVillain, infoCamera, infoGame, infoHeroe, infoTwoPlayer, infoVillain } from '../helpers/helpers.js';
 import { MathUtils, Vector3 } from 'three';
 import { loadVillain } from '../components/villain/villain.js';
 import { loadBulletVillain } from '../components/bulletVillain/bulletVillain.js';
@@ -19,14 +18,20 @@ import { ambientLight } from '../components/lights/ambiental.js';
 import { spotLight } from '../components/lights/spot.js';
 import { directionalLight } from '../components/lights/directional.js';
 import { AudioListener, AudioLoader, Audio } from "three";
+import socketIO from 'socket.io-client';
+import { loadTwoPlayer } from '../components/twoPlayer/twoPlayer.js';
+import { loadTwoPlayerBullet } from '../components/bulletTwoPlayer/bulletTwoPlayer.js';
 
 let camera;
 let renderer;
 let controls;
 let scene;
 let loop;
+let socket;
+let posUser;
 
 class World {
+
     constructor(container) {
         camera = createCamera();
         scene = createScene();
@@ -51,10 +56,37 @@ class World {
 
     async init() {
 
+        if (infoGame.mode === 'TwoPlayers')
+            socket = socketIO.connect('http://localhost:4000');
+        else if (infoGame.mode === 'OnePlayer')
+            socket = null;
+
+        if (socket !== null) {
+            socket.on('socketId', (socketId) => {
+                localStorage.setItem('socketId', socketId.socketId);
+                posUser = socketId.posUser;
+                if (socketId.posUser === 1) {
+                    infoHeroe.countDegrees = 120;
+                    infoCamera.countDegrees = 120;
+                    infoTwoPlayer.countDegrees = 300;
+                } else if (socketId.posUser === 2) {
+                    infoHeroe.countDegrees = 300;
+                    infoCamera.countDegrees = 300;
+                    infoTwoPlayer.countDegrees = 120;
+                }
+                socket.removeListener('socketId');
+            });
+        }
+
         const { building } = await loadBuilding();
-        const hearthItem = await loadHearthItem(scene);
-        const bulletItem = await loadBulletItem(scene);
-        const shieldItem = await loadShieldItem(scene);
+        if (socket === null) {
+            const hearthItem = await loadHearthItem(scene, socket);
+            const bulletItem = await loadBulletItem(scene, socket);
+            const shieldItem = await loadShieldItem(scene, socket);
+
+            scene.add(hearthItem, bulletItem, shieldItem);
+            loop.updatables.push(hearthItem, bulletItem, shieldItem);
+        }
         const [villain, villainData] = await loadVillain(scene, loop, true, false, 50, 0, null);
         infoVillain.model = villainData;
         infoVillain.animations = villainData.animations[0];
@@ -69,20 +101,41 @@ class World {
             audio.setVolume(infoGame.volume);
             audio.play();
         });
-        const heroe = await loadHeroe(scene, loop, audio);
+
+        const heroe = await loadHeroe(scene, loop, socket);
 
         infoHeroe.model = heroe;
 
-        const [bulletHeroe, dataHeroe] = await loadBulletHeroe(
+        if (socket !== null) {
+            const [bulletTwoPlayer, dataBulletTwoPlayer] = await loadTwoPlayerBullet(
+                new Vector3(10 * Math.cos(MathUtils.degToRad(45)), 0, 10 * Math.sin(MathUtils.degToRad(45))),
+                scene,
+                45,
+                false,
+                false,
+                false,
+                false, loop);
+
+            infoBulletTwoPlayer.bullet = dataBulletTwoPlayer;
+
+            const twoPlayer = await loadTwoPlayer(scene, loop, socket);
+
+            infoTwoPlayer.model = twoPlayer;
+
+            scene.add(twoPlayer);
+            loop.updatables.push(twoPlayer);
+        }
+
+        const [bulletHeroe, dataBulletHeroe] = await loadBulletHeroe(
             new Vector3(Math.cos(MathUtils.degToRad(45)), 0, Math.sin(MathUtils.degToRad(45))),
             scene,
             45,
             false,
             false,
             false,
-            false);
+            false, socket, loop);
 
-        infoBulletHeroe.bullet = dataHeroe;
+        infoBulletHeroe.bullet = dataBulletHeroe;
 
         const [bulletVillain, bulletVillainData] = await loadBulletVillain(
             new Vector3(Math.cos(MathUtils.degToRad(45)), 0, Math.sin(MathUtils.degToRad(45))),
@@ -92,8 +145,8 @@ class World {
             false);
 
         infoBulletVillain.bullet = bulletVillainData;
-        scene.add(heroe, building, bulletItem, hearthItem, shieldItem);
-        loop.updatables.push(heroe, building, bulletItem, hearthItem, shieldItem);
+        scene.add(heroe, building);
+        loop.updatables.push(heroe, building);
     }
 
     start() {

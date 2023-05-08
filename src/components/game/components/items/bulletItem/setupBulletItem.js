@@ -1,8 +1,8 @@
 import { Box3, MathUtils } from "three";
-import { infoGame, infoHeroe } from "../../../helpers/helpers";
+import { infoGame, infoHeroe, infoTwoPlayer } from "../../../helpers/helpers";
 import { AudioListener, AudioLoader, Audio } from "three";
 
-function setupBulletItem(data, scene) {
+function setupBulletItem(data, scene, socket) {
     let distanceModel = 10;
     let degreesPositionModel = 180;
     let positionYModel = 15;
@@ -57,6 +57,24 @@ function setupBulletItem(data, scene) {
             });
             infoHeroe.hasBullet = true;
             countPositionYModel = positionYModel;
+        }
+
+        if (socket !== null) {
+            let boxTwoPlayer = new Box3().setFromObject(infoTwoPlayer.model);
+            let boxBulletItem = new Box3().setFromObject(bulletItem);
+
+            if (boxTwoPlayer.intersectsBox(boxBulletItem)) {
+                audio.stop();
+                audioLoader.load('sounds/item.mp3', (buffer) => {
+                    audio.setBuffer(buffer);
+                    audio.setLoop(false);
+                    audio.setVolume(infoGame.volume);
+                    audio.play();
+
+                });
+                infoTwoPlayer.hasBullet = true;
+                countPositionYModel = positionYModel;
+            }
         }
     };
 

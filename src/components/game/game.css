@@ -24,6 +24,13 @@
     color: yellow;
 }
 
+.life-two-player {
+    position: absolute;
+    top: 1.2rem;
+    left: 70%;
+    color: yellow;
+}
+
 .score-scene {
     position: absolute;
     top: 1.2rem;
@@ -38,11 +45,24 @@
     color: yellow;
 }
 
+.extra-life-scene-two-player {
+    position: absolute;
+    top: 1.2rem;
+    left: 90%;
+    color: yellow;
+}
+
 
 .img-pos {
     position: absolute;
     top: 0.1rem;
     left: 6rem;
+}
+
+.img-pos-two-player {
+    position: absolute;
+    top: 0.1rem;
+    left: 89%;
 }
 
 .img-lifes {
@@ -56,7 +76,7 @@
 
 .show-modal {
     display: block;
-    
+
 }
 
 .hide-modal {

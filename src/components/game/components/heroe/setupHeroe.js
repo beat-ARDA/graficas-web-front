@@ -15,8 +15,11 @@ import { setupVillain } from "../villain/setupVillain";
 import { colisionHeroe, colisionVillain } from "../event";
 import { AudioListener, AudioLoader, Audio } from "three";
 import { AnimationMixer } from "three";
+import { insertScoreOnePlayer } from "../../../../services/services";
+import { userData } from "../../helpers/helpers";
 
-function setupHeroe(data, scene, loop) {
+function setupHeroe(data, scene, loop, socket) {
+
     const heroe = data.scene.children[0];
     let indexVillainsToDelete = [];
     let materialShield = new MeshStandardMaterial({ color: 0xFFFF00 });
@@ -53,7 +56,8 @@ function setupHeroe(data, scene, loop) {
                 audio.play();
             });
             loop.stop();
-            loop.stop();
+            
+            insertScoreOnePlayer({ "user_name": userData.user_name, "score": infoGame.score });
         }
         /*///////////////////////////////////////////////////////////////////////////////////////
         /                                     COUNT ITEMS                                      //
@@ -90,175 +94,179 @@ function setupHeroe(data, scene, loop) {
                 audio.play();
             });
             loop.stop();
+
+            insertScoreOnePlayer({ "user_name": userData.user_name, "score": infoGame.score });
         }
 
         /*///////////////////////////////////////////////////////////////////////////////////////
         /                                     CREATE VILLAINS                                  //
         /*///////////////////////////////////////////////////////////////////////////////////////
-        if (infoGame.level === 1 && !infoGame.createdVillains) {
-            for (let i = 0; i < 3; i++) {
+        if (socket === null) {
+            if (infoGame.level === 1 && !infoGame.createdVillains) {
+                for (let i = 0; i < 3; i++) {
 
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    false,
-                    true,
-                    infoHeroe.countDegrees + 90,
-                    i, infoVillain.animations);
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        false,
+                        true,
+                        infoHeroe.countDegrees + 90,
+                        i, infoVillain.animations);
 
-                scene.add(villain);
-                loop.updatables.push(villain);
+                    scene.add(villain);
+                    loop.updatables.push(villain);
 
-                villainsArray.push(villain);
+                    villainsArray.push(villain);
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        false,
+                        true,
+                        infoHeroe.countDegrees - 90,
+                        i, infoVillain.animations);
+
+                    scene.add(villain);
+                    loop.updatables.push(villain);
+
+                    villainsArray.push(villain);
+                }
+
+                infoGame.createdVillains = true;
             }
 
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    false,
-                    true,
-                    infoHeroe.countDegrees - 90,
-                    i, infoVillain.animations);
+            if (infoGame.level === 2 && !infoGame.createdVillains) {
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        true,
+                        false,
+                        infoHeroe.countDegrees + 90,
+                        i, infoVillain.animations);
 
-                scene.add(villain);
-                loop.updatables.push(villain);
+                    scene.add(villain);
+                    loop.updatables.push(villain);
 
-                villainsArray.push(villain);
+                    villainsArray.push(villain);
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        true,
+                        false,
+                        infoHeroe.countDegrees - 90,
+                        i, infoVillain.animations);
+
+                    scene.add(villain);
+                    loop.updatables.push(villain);
+
+                    villainsArray.push(villain);
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        true,
+                        false,
+                        infoHeroe.countDegrees + 180,
+                        i, infoVillain.animations);
+
+                    scene.add(villain);
+                    loop.updatables.push(villain);
+
+                    villainsArray.push(villain);
+                }
+
+                infoGame.createdVillains = true;
             }
 
-            infoGame.createdVillains = true;
-        }
+            if (infoGame.level === 3 && !infoGame.createdVillains) {
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        true,
+                        false,
+                        infoHeroe.countDegrees + 45,
+                        i, infoVillain.animations);
 
-        if (infoGame.level === 2 && !infoGame.createdVillains) {
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    true,
-                    false,
-                    infoHeroe.countDegrees + 90,
-                    i, infoVillain.animations);
+                    scene.add(villain);
+                    loop.updatables.push(villain);
 
-                scene.add(villain);
-                loop.updatables.push(villain);
+                    villainsArray.push(villain);
+                }
 
-                villainsArray.push(villain);
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        true,
+                        false,
+                        infoHeroe.countDegrees + 90,
+                        i, infoVillain.animations);
+
+                    scene.add(villain);
+                    loop.updatables.push(villain);
+
+                    villainsArray.push(villain);
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        true,
+                        false,
+                        infoHeroe.countDegrees + 135,
+                        i, infoVillain.animations);
+
+                    scene.add(villain);
+                    loop.updatables.push(villain);
+
+                    villainsArray.push(villain);
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    const cloneVillain = infoVillain.model.scene.children[0].clone();
+                    const villain = setupVillain(
+                        scene,
+                        loop,
+                        cloneVillain,
+                        true,
+                        false,
+                        infoHeroe.countDegrees + 180,
+                        i, infoVillain.animations);
+
+                    scene.add(villain);
+                    loop.updatables.push(villain);
+
+                    villainsArray.push(villain);
+                }
+
+                infoGame.createdVillains = true;
             }
-
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    true,
-                    false,
-                    infoHeroe.countDegrees - 90,
-                    i, infoVillain.animations);
-
-                scene.add(villain);
-                loop.updatables.push(villain);
-
-                villainsArray.push(villain);
-            }
-
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    true,
-                    false,
-                    infoHeroe.countDegrees + 180,
-                    i, infoVillain.animations);
-
-                scene.add(villain);
-                loop.updatables.push(villain);
-
-                villainsArray.push(villain);
-            }
-
-            infoGame.createdVillains = true;
-        }
-
-        if (infoGame.level === 3 && !infoGame.createdVillains) {
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    true,
-                    false,
-                    infoHeroe.countDegrees + 45,
-                    i, infoVillain.animations);
-
-                scene.add(villain);
-                loop.updatables.push(villain);
-
-                villainsArray.push(villain);
-            }
-
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    true,
-                    false,
-                    infoHeroe.countDegrees + 90,
-                    i, infoVillain.animations);
-
-                scene.add(villain);
-                loop.updatables.push(villain);
-
-                villainsArray.push(villain);
-            }
-
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    true,
-                    false,
-                    infoHeroe.countDegrees + 135,
-                    i, infoVillain.animations);
-
-                scene.add(villain);
-                loop.updatables.push(villain);
-
-                villainsArray.push(villain);
-            }
-
-            for (let i = 0; i < 3; i++) {
-                const cloneVillain = infoVillain.model.scene.children[0].clone();
-                const villain = setupVillain(
-                    scene,
-                    loop,
-                    cloneVillain,
-                    true,
-                    false,
-                    infoHeroe.countDegrees + 180,
-                    i, infoVillain.animations);
-
-                scene.add(villain);
-                loop.updatables.push(villain);
-
-                villainsArray.push(villain);
-            }
-
-            infoGame.createdVillains = true;
         }
 
         /*///////////////////////////////////////////////////////////////////////////////////////
@@ -374,26 +382,36 @@ function setupHeroe(data, scene, loop) {
     let lastExecutionTime = 0;
 
     async function onHeroeMove(event) {
-
         var keyCode = event.which;
         const now = Date.now();
 
         if (keyCode === keyboards.a) {
+            if (socket !== null)
+                socket.emit('moveLeft', localStorage.getItem('socketId'));
             infoHeroe.left = true;
             infoHeroe.viewLeft = true;
             infoHeroe.viewRight = false;
+
         } else if (keyCode === keyboards.d) {
+            if (socket !== null)
+                socket.emit('moveRight', localStorage.getItem('socketId'));
             infoHeroe.right = true;
             infoHeroe.viewLeft = false;
             infoHeroe.viewRight = true;
-        } else if (keyCode === keyboards.w)
+        } else if (keyCode === keyboards.w) {
+            if (socket !== null)
+                socket.emit('moveUp', localStorage.getItem('socketId'));
             infoHeroe.up = true;
+        }
         else if (keyCode === keyboards.s) {
+            if (socket !== null)
+                socket.emit('moveDown', localStorage.getItem('socketId'));
             infoHeroe.down = true;
         }
-
         if (now - lastExecutionTime >= 100) {
             if (keyCode === keyboards.space) {
+                if (socket !== null)
+                    socket.emit('moveShoot', localStorage.getItem('socketId'));
                 audio.stop();
                 //GENERAR BULLETS HEROE
                 audioLoader.load('sounds/laser-sound.mp3', (buffer) => {
@@ -413,7 +431,7 @@ function setupHeroe(data, scene, loop) {
                             infoHeroe.viewLeft,
                             infoHeroe.viewRight,
                             i === 0 ? true : false,
-                            i === 2 ? true : false);
+                            i === 2 ? true : false, socket, loop);
 
                         scene.add(bulletHeroe);
                         loop.updatables.push(bulletHeroe);
@@ -430,7 +448,7 @@ function setupHeroe(data, scene, loop) {
                         infoHeroe.viewLeft,
                         infoHeroe.viewRight,
                         false,
-                        false);
+                        false, socket, loop);
                     scene.add(bulletHeroe);
                     loop.updatables.push(bulletHeroe);
                 }
@@ -442,14 +460,26 @@ function setupHeroe(data, scene, loop) {
 
     async function onHeoreStop(event) {
         var keyCode = event.which;
-        if (keyCode === keyboards.w)
+        if (keyCode === keyboards.w) {
+            if (socket !== null)
+                socket.emit('moveLeaveUp', localStorage.getItem('socketId'));
             infoHeroe.up = false;
-        else if (keyCode === keyboards.s)
+        }
+        else if (keyCode === keyboards.s) {
+            if (socket !== null)
+                socket.emit('moveLeaveDown', localStorage.getItem('socketId'));
             infoHeroe.down = false;
-        else if (keyCode === keyboards.a)
+        }
+        else if (keyCode === keyboards.a) {
+            if (socket !== null)
+                socket.emit('moveLeaveLeft', localStorage.getItem('socketId'));
             infoHeroe.left = false;
-        else if (keyCode === keyboards.d)
+        }
+        else if (keyCode === keyboards.d) {
+            if (socket !== null)
+                socket.emit('moveLeaveRight', localStorage.getItem('socketId'));
             infoHeroe.right = false;
+        }
     };
 
     document.addEventListener("keydown", onHeroeMove, false);

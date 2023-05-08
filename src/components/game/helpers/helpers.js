@@ -1,5 +1,3 @@
-let cameraHeroePosition = 90;
-
 export const keyboards = {
   "w": 87,
   "s": 83,
@@ -16,8 +14,10 @@ export const infoGame = {
   "villainsDeleted": 0,
   "score": 0,
   "scene": 1,
-  "volume": 0.2,
-  "dificulty": 'easy'
+  "volume": 0.4,
+  "dificulty": 'easy',
+  "mode": '',
+  "session": []
 }
 
 export const infoVillain = {
@@ -32,14 +32,40 @@ export let bulletVillainToDelete = [];
 
 export let bulletHeroeToDelete = [];
 
+export let bulletTwoPlayerToDelete = [];
+
 export let villainsToDelete = [];
 
 export const infoHeroe = {
   "scale": 0.07,
   "degreesRotation": 90,
   "distance": 10,
-  "countDegrees": cameraHeroePosition,
-  "positionY": 0,
+  "countDegrees": 0,
+  "positionY": -4,
+  "hasShield": false,
+  "timeToHasShield": 15,
+  "countHasShield": 0,
+  "hasBullet": false,
+  "timeToHasBullet": 10,
+  "countHasBullet": 0,
+  "countShiled": 5,
+  "lifes": 3,
+  "left": false,
+  "right": false,
+  "viewLeft": false,
+  "viewRight": true,
+  "down": false,
+  "up": false,
+  "material": null,
+  "model": null
+};
+
+export const infoTwoPlayer = {
+  "scale": 0.07,
+  "degreesRotation": 90,
+  "distance": 10,
+  "countDegrees": 0,
+  "positionY": -4,
   "hasShield": false,
   "timeToHasShield": 15,
   "countHasShield": 0,
@@ -62,10 +88,14 @@ export const infoCamera = {
   "left": false,
   "right": false,
   "distance": 20,
-  "countDegrees": cameraHeroePosition
+  "countDegrees": 0
 }
 
 export const infoBulletHeroe = {
+  "bullet": null
+}
+
+export const infoBulletTwoPlayer = {
   "bullet": null
 }
 
@@ -74,3 +104,7 @@ export const infoBulletVillain = {
 }
 
 export const renderer_ = null;
+
+export const userData = {
+  "user_name": ''
+}

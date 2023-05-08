@@ -1,10 +1,10 @@
 import { Box3, MathUtils } from "three";
-import { infoHeroe } from "../../../helpers/helpers";
-import { colisionHeroe } from "../../event";
+import { infoHeroe, infoTwoPlayer } from "../../../helpers/helpers";
+import { colisionHeroe, lifesTwoPlayer } from "../../event";
 import { AudioListener, AudioLoader, Audio } from "three";
 import { infoGame } from "../../../helpers/helpers";
 
-function setupHearthItem(data, scene) {
+function setupHearthItem(data, scene, socket) {
     let distanceModel = 10;
     let degreesPositionModel = 45;
     let positionYModel = 15;
@@ -65,6 +65,26 @@ function setupHearthItem(data, scene) {
             infoHeroe.lifes++;
             colisionHeroe();
             countPositionYModel = positionYModel;
+        }
+
+        if (socket !== null) {
+            let boxTwoPlayer = new Box3().setFromObject(infoTwoPlayer.model);
+            let boxHearthItem = new Box3().setFromObject(hearthItem);
+
+            if (boxTwoPlayer.intersectsBox(boxHearthItem)) {
+                audio.stop();
+
+                audioLoader.load('sounds/item.mp3', (buffer) => {
+                    audio.setBuffer(buffer);
+                    audio.setLoop(false);
+                    audio.setVolume(infoGame.volume);
+                    audio.play();
+
+                });
+                infoTwoPlayer.lifes++;
+                lifesTwoPlayer();
+                countPositionYModel = positionYModel;
+            }
         }
     };
 

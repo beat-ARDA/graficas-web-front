@@ -1,7 +1,7 @@
 import { MathUtils } from "three";
-import { villainsArray, bulletHeroeToDelete, villainsToDelete, infoGame, infoVillain } from "../../helpers/helpers";
+import { villainsArray, bulletHeroeToDelete, villainsToDelete, infoGame, infoVillain, infoTwoPlayer } from "../../helpers/helpers";
 import { Box3 } from "three";
-import { colisionVillain } from "../event";
+import { colisionVillain, lifesTwoPlayer } from "../event";
 
 function setupBulletHeroe(
     data,
@@ -11,7 +11,9 @@ function setupBulletHeroe(
     heroeLeft,
     heroeRight,
     up,
-    down
+    down,
+    socket,
+    loop
 ) {
     let bulletHeroe = null;
     if (data.scene === undefined)
@@ -76,36 +78,53 @@ function setupBulletHeroe(
         //                          COLISION WITH VILLAINS                          //
         //////////////////////////////////////////////////////////////////////////////
 
-        //DETECT COLISION
-        villainsArray.forEach((villain, index) => {
-            let boxBulletHeroe = new Box3().setFromObject(bulletHeroe);
-            let boxVillain = new Box3().setFromObject(villain);
+        if (socket === null) {
+            //DETECT COLISION
+            villainsArray.forEach((villain, index) => {
+                let boxBulletHeroe = new Box3().setFromObject(bulletHeroe);
+                let boxVillain = new Box3().setFromObject(villain);
 
-            if (boxVillain.intersectsBox(boxBulletHeroe)) {
-                bulletHeroeToDelete.push(bulletHeroe);
-                villainsToDelete.push(villain);
-                indexVillainsToDelete.push(index);
+                if (boxVillain.intersectsBox(boxBulletHeroe)) {
+                    bulletHeroeToDelete.push(bulletHeroe);
+                    villainsToDelete.push(villain);
+                    indexVillainsToDelete.push(index);
 
-                infoGame.villainsDeleted++;
-                infoGame.score += infoVillain.score;
-                colisionVillain();
+                    infoGame.villainsDeleted++;
+                    infoGame.score += infoVillain.score;
+                    colisionVillain();
 
-                if (infoGame.villainsDeleted === 6) {
-                    infoGame.level = 2;
-                    infoGame.createdVillains = false;
+                    if (infoGame.villainsDeleted === 6) {
+                        infoGame.level = 2;
+                        infoGame.createdVillains = false;
+                    }
+                    else if (infoGame.villainsDeleted === 15) {
+                        infoGame.level = 3;
+                        infoGame.createdVillains = false;
+                    }
                 }
-                else if (infoGame.villainsDeleted === 15) {
-                    infoGame.level = 3;
-                    infoGame.createdVillains = false;
+            });
+
+            indexVillainsToDelete.forEach((index) => {
+                villainsArray.splice(index, 1);
+            });
+
+            indexVillainsToDelete = [];
+        } else {
+            let boxBulletHeroe = new Box3().setFromObject(bulletHeroe);
+            let boxTwoPlayer = new Box3().setFromObject(infoTwoPlayer.model);
+
+            if (boxTwoPlayer.intersectsBox(boxBulletHeroe)) {
+                bulletHeroeToDelete.push(bulletHeroe);
+
+                infoTwoPlayer.lifes--;
+                lifesTwoPlayer();
+
+                if (infoTwoPlayer.lifes <= 0) {
+                    scene.remove(infoTwoPlayer.model);
+                    loop.stop();
                 }
             }
-        });
-
-        indexVillainsToDelete.forEach((index) => {
-            villainsArray.splice(index, 1);
-        });
-
-        indexVillainsToDelete = [];
+        }
     };
 
     return bulletHeroe;

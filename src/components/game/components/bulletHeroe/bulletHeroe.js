@@ -8,7 +8,8 @@ async function loadBulletHeroe(
     heroeLeft,
     heroeRight,
     up,
-    down
+    down,
+    socket, loop
 ) {
     const loader = new GLTFLoader();
 
@@ -22,7 +23,7 @@ async function loadBulletHeroe(
         heroeLeft,
         heroeRight,
         up,
-        down
+        down, socket, loop
     );
 
     return [bulletHeroe, bulletHeroeData];

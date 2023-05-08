@@ -1,8 +1,8 @@
 import { Box3, MathUtils } from "three";
-import { infoGame, infoHeroe } from "../../../helpers/helpers";
+import { infoGame, infoHeroe, infoTwoPlayer } from "../../../helpers/helpers";
 import { AudioListener, AudioLoader, Audio } from "three";
 
-function setupShieldItem(data, scene) {
+function setupShieldItem(data, scene, socket) {
     let distanceModel = 10;
     let degreesPositionModel = 90;
     let positionYModel = 15;
@@ -58,6 +58,26 @@ function setupShieldItem(data, scene) {
             });
             infoHeroe.hasShield = true;
             countPositionYModel = positionYModel;
+        }
+
+        if (socket !== null) {
+            let boxTwoPlayer = new Box3().setFromObject(infoTwoPlayer.model);
+            let boxShieldItem = new Box3().setFromObject(shieldItem);
+
+            if (boxTwoPlayer.intersectsBox(boxShieldItem)) {
+                audio.stop();
+
+                audioLoader.load('sounds/item.mp3', (buffer) => {
+                    audio.setBuffer(buffer);
+                    audio.setLoop(false);
+                    audio.setVolume(infoGame.volume);
+                    audio.play();
+
+                });
+
+                infoTwoPlayer.hasShield = true;
+                countPositionYModel = positionYModel;
+            }
         }
     };
 

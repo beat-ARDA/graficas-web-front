@@ -2,8 +2,7 @@ import { React, useEffect, useState } from "react";
 import './game.css';
 import { World } from './world/world.js';
 import { colisionDispatcher } from "./components/event";
-import { infoGame, infoHeroe, keyboards } from "./helpers/helpers";
-import { useNavigate } from "react-router-dom";
+import { infoGame, infoHeroe, infoTwoPlayer, keyboards } from "./helpers/helpers";
 
 async function main() {
     const container = document.querySelector('#scene-container');
@@ -14,12 +13,11 @@ async function main() {
 }
 
 export default function Game() {
-
     const [lifes, setLifes] = useState(infoHeroe.lifes);
+    const [lifesTwoPlayer, setLifesTwoPlayer] = useState(infoTwoPlayer.lifes);
     const [score, setScore] = useState(infoGame.score);
     const [modal, setModal] = useState(false);
     const [loopWorld, setLoopWorld] = useState();
-    const navigate = useNavigate();
 
     useEffect(() => {
         main().then((world) => {
@@ -43,6 +41,10 @@ export default function Game() {
             setScore(event.data);
         });
 
+        colisionDispatcher.addEventListener('lifesTwoPlayer', function (event) {
+            setLifesTwoPlayer(event.data);
+        });
+
     }, []);
 
     return (
@@ -54,7 +56,17 @@ export default function Game() {
                 <img className={`${lifes === 1 ? 'img-lifes img-pos' : 'img-none'}`} src="images/2v.png" />
                 <img className={`${lifes === 0 ? 'img-lifes img-pos' : 'img-none'}`} src="images/3v.png" />
                 <small className={`${lifes > 3 ? 'extra-life-scene gui-text' : 'img-none'}`}>+ {lifes - 3} extra</small>
-                <h5 class="score-scene gui-text">Score: {score}</h5>
+
+                <div className={`${infoGame.mode === 'TwoPlayers' ? '' : 'd-none'}`}>
+                    <h5 class="life-two-player gui-text">Lifes player 2: </h5>
+                    <img className={`${lifesTwoPlayer >= 3 ? 'img-lifes  img-pos-two-player' : 'img-none'}`} src="images/0v.png" />
+                    <img className={`${lifesTwoPlayer === 2 ? 'img-lifes img-pos-two-player' : 'img-none'}`} src="images/1v.png" />
+                    <img className={`${lifesTwoPlayer === 1 ? 'img-lifes img-pos-two-player' : 'img-none'}`} src="images/2v.png" />
+                    <img className={`${lifesTwoPlayer === 0 ? 'img-lifes img-pos-two-player' : 'img-none'}`} src="images/3v.png" />
+                    <small className={`${lifesTwoPlayer > 3 ? 'extra-life-scene-two-player gui-text' : 'img-none'}`}>+ {lifesTwoPlayer - 3} extra</small>
+                </div>
+
+                <h5 class={`score-scene gui-text ${infoGame.mode === 'OnePlayer' ? '' : 'd-none'}`}>Score: {score}</h5>
             </div>
 
             <div id="myModal" className={`${modal ? 'modal show-modal' : 'modal hide-modal'}`} tabindex="-1">
