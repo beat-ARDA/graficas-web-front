@@ -17,7 +17,9 @@ export const infoGame = {
   "volume": 0.4,
   "dificulty": 'easy',
   "mode": '',
-  "session": []
+  "session": [],
+  "winner": null,
+  "socket": null
 }
 
 export const infoVillain = {
@@ -57,7 +59,8 @@ export const infoHeroe = {
   "down": false,
   "up": false,
   "material": null,
-  "model": null
+  "model": null,
+  "pos": 0
 };
 
 export const infoTwoPlayer = {
@@ -81,7 +84,8 @@ export const infoTwoPlayer = {
   "down": false,
   "up": false,
   "material": null,
-  "model": null
+  "model": null,
+  "nameUser": ''
 };
 
 export const infoCamera = {

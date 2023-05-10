@@ -27,8 +27,6 @@ let renderer;
 let controls;
 let scene;
 let loop;
-let socket;
-let posUser;
 
 class World {
 
@@ -56,33 +54,11 @@ class World {
 
     async init() {
 
-        if (infoGame.mode === 'TwoPlayers')
-            socket = socketIO.connect('http://localhost:4000');
-        else if (infoGame.mode === 'OnePlayer')
-            socket = null;
-
-        if (socket !== null) {
-            socket.on('socketId', (socketId) => {
-                localStorage.setItem('socketId', socketId.socketId);
-                posUser = socketId.posUser;
-                if (socketId.posUser === 1) {
-                    infoHeroe.countDegrees = 120;
-                    infoCamera.countDegrees = 120;
-                    infoTwoPlayer.countDegrees = 300;
-                } else if (socketId.posUser === 2) {
-                    infoHeroe.countDegrees = 300;
-                    infoCamera.countDegrees = 300;
-                    infoTwoPlayer.countDegrees = 120;
-                }
-                socket.removeListener('socketId');
-            });
-        }
-
         const { building } = await loadBuilding();
-        if (socket === null) {
-            const hearthItem = await loadHearthItem(scene, socket);
-            const bulletItem = await loadBulletItem(scene, socket);
-            const shieldItem = await loadShieldItem(scene, socket);
+        if (infoGame.socket === null) {
+            const hearthItem = await loadHearthItem(scene, infoGame.socket);
+            const bulletItem = await loadBulletItem(scene, infoGame.socket);
+            const shieldItem = await loadShieldItem(scene, infoGame.socket);
 
             scene.add(hearthItem, bulletItem, shieldItem);
             loop.updatables.push(hearthItem, bulletItem, shieldItem);
@@ -102,11 +78,11 @@ class World {
             audio.play();
         });
 
-        const heroe = await loadHeroe(scene, loop, socket);
+        const heroe = await loadHeroe(scene, loop, infoGame.socket);
 
         infoHeroe.model = heroe;
 
-        if (socket !== null) {
+        if (infoGame.socket !== null) {
             const [bulletTwoPlayer, dataBulletTwoPlayer] = await loadTwoPlayerBullet(
                 new Vector3(10 * Math.cos(MathUtils.degToRad(45)), 0, 10 * Math.sin(MathUtils.degToRad(45))),
                 scene,
@@ -118,7 +94,7 @@ class World {
 
             infoBulletTwoPlayer.bullet = dataBulletTwoPlayer;
 
-            const twoPlayer = await loadTwoPlayer(scene, loop, socket);
+            const twoPlayer = await loadTwoPlayer(scene, loop, infoGame.socket);
 
             infoTwoPlayer.model = twoPlayer;
 
@@ -133,7 +109,7 @@ class World {
             false,
             false,
             false,
-            false, socket, loop);
+            false, infoGame.socket, loop);
 
         infoBulletHeroe.bullet = dataBulletHeroe;
 
@@ -147,6 +123,8 @@ class World {
         infoBulletVillain.bullet = bulletVillainData;
         scene.add(heroe, building);
         loop.updatables.push(heroe, building);
+
+        return infoGame.socket;
     }
 
     start() {

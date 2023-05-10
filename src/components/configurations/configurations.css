@@ -9,7 +9,7 @@
 
 .background-configurations {
     /* background-image: url('/images/ajustes-fondo.png'); */
-    background-image: url('https://graficas-web-front.vercel.app/images/ajustes-fondo.png');
+    background-image: url('../../../public/images/ajustes-fondo.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -27,7 +27,7 @@
 }
 
 .image-life3 {
-    background-image: url('https://graficas-web-front.vercel.app/images/3v.png');
+    background-image: url('../../../public/images/3v.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -36,7 +36,7 @@
 }
 
 .image-life2 {
-    background-image: url('https://graficas-web-front.vercel.app/images/2v.png');
+    background-image: url('../../../public/images/2v.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -45,7 +45,7 @@
 }
 
 .image-life1 {
-    background-image: url('http://localhost:3000/images/1v.png');
+    background-image: url('../../../public/images/1v.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -54,7 +54,7 @@
 }
 
 .image-vol5 {
-    background-image: url('http://localhost:3000/images/v5.png');
+    background-image: url('../../../public/images/v5.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -63,7 +63,7 @@
 }
 
 .image-vol4 {
-    background-image: url('http://localhost:3000/images/v4.png');
+    background-image: url('../../../public/images/v4.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -72,7 +72,7 @@
 }
 
 .image-vol3 {
-    background-image: url('http://localhost:3000/images/v3.png');
+    background-image: url('../../../public/images/v3.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -81,7 +81,7 @@
 }
 
 .image-vol2 {
-    background-image: url('http://localhost:3000/images/v2.png');
+    background-image: url('../../../public/images/v2.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -90,7 +90,7 @@
 }
 
 .image-vol1 {
-    background-image: url('http://localhost:3000/images/v1.png');
+    background-image: url('../../../public/images/v1.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -99,7 +99,7 @@
 }
 
 .image-vol0 {
-    background-image: url('http://localhost:3000/images/v0.png');
+    background-image: url('../../../public/images/v0.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;

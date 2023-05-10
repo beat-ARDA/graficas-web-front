@@ -80,6 +80,7 @@ function setupBulletVillain(
                     audio.play();
 
                 });
+                
                 infoHeroe.lifes--;
                 colisionHeroe();
             }

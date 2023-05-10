@@ -12,10 +12,10 @@ import {
 } from "../../helpers/helpers";
 import { setupBulletHeroe } from "../bulletHeroe/setupBulletHeroe";
 import { setupVillain } from "../villain/setupVillain";
-import { colisionHeroe, colisionVillain } from "../event";
+import { colisionHeroe, colisionVillain, winner } from "../event";
 import { AudioListener, AudioLoader, Audio } from "three";
 import { AnimationMixer } from "three";
-import { insertScoreOnePlayer } from "../../../../services/services";
+import { insertScoreOnePlayer, insertScoreTwoPlayer } from "../../../../services/services";
 import { userData } from "../../helpers/helpers";
 
 function setupHeroe(data, scene, loop, socket) {
@@ -56,7 +56,8 @@ function setupHeroe(data, scene, loop, socket) {
                 audio.play();
             });
             loop.stop();
-            
+            infoGame.winner = localStorage.getItem('socketId');
+            winner();
             insertScoreOnePlayer({ "user_name": userData.user_name, "score": infoGame.score });
         }
         /*///////////////////////////////////////////////////////////////////////////////////////
@@ -93,9 +94,13 @@ function setupHeroe(data, scene, loop, socket) {
                 audio.setVolume(1);
                 audio.play();
             });
-            loop.stop();
 
-            insertScoreOnePlayer({ "user_name": userData.user_name, "score": infoGame.score });
+            loop.stop();
+            infoGame.winner = 'p2';
+            winner();
+
+            if (infoGame.mode === 'OnePlayer')
+                insertScoreOnePlayer({ "user_name": userData.user_name, "score": infoGame.score });
         }
 
         /*///////////////////////////////////////////////////////////////////////////////////////

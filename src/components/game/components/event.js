@@ -15,4 +15,8 @@ function colisionVillain() {
     colisionDispatcher.dispatchEvent({ type: 'colisionVillain', data: infoGame.score });
 }
 
-export { colisionDispatcher, colisionHeroe, colisionVillain, lifesTwoPlayer }
+function winner() {
+    colisionDispatcher.dispatchEvent({ type: 'winner', data: infoGame.winner });
+}
+
+export { colisionDispatcher, colisionHeroe, colisionVillain, lifesTwoPlayer, winner }

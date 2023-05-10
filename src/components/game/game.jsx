@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import './game.css';
 import { World } from './world/world.js';
 import { colisionDispatcher } from "./components/event";
-import { infoGame, infoHeroe, infoTwoPlayer, keyboards } from "./helpers/helpers";
+import { infoGame, infoHeroe, infoTwoPlayer, keyboards, userData } from "./helpers/helpers";
 
 async function main() {
     const container = document.querySelector('#scene-container');
@@ -18,6 +18,7 @@ export default function Game() {
     const [score, setScore] = useState(infoGame.score);
     const [modal, setModal] = useState(false);
     const [loopWorld, setLoopWorld] = useState();
+    const [winner, setWinner] = useState(null);
 
     useEffect(() => {
         main().then((world) => {
@@ -28,7 +29,9 @@ export default function Game() {
                     setModal(true);
                 }
             }, false);
+
             setLoopWorld(world);
+
         }).catch((err) => {
             console.error(err);
         });
@@ -43,6 +46,12 @@ export default function Game() {
 
         colisionDispatcher.addEventListener('lifesTwoPlayer', function (event) {
             setLifesTwoPlayer(event.data);
+        });
+
+        colisionDispatcher.addEventListener('winner', function (event) {
+            document.removeEventListener("keydown", async function () { }, false);
+            setWinner(event.data);
+            setModal(true);
         });
 
     }, []);
@@ -67,6 +76,10 @@ export default function Game() {
                 </div>
 
                 <h5 class={`score-scene gui-text ${infoGame.mode === 'OnePlayer' ? '' : 'd-none'}`}>Score: {score}</h5>
+
+                <h1 className={`gui-text winner-pos ${winner !== localStorage.getItem('socketId') ? 'd-none' : null}`}>YOU WIN</h1>
+                <h1 className={`gui-text winner-pos ${winner !== null && winner === 'p2' ? null : 'd-none'}`}>YOU LOSE</h1>
+
             </div>
 
             <div id="myModal" className={`${modal ? 'modal show-modal' : 'modal hide-modal'}`} tabindex="-1">
@@ -77,7 +90,7 @@ export default function Game() {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body d-flex flex-column">
-                            <button onClick={() => { loopWorld.start(); setModal(false); }} type="button" className="btn btn-secondary mt-2" data-bs-dismiss="modal">Reaunudar</button>
+                            <button disabled={winner === null ? false : true} onClick={() => { loopWorld.start(); setModal(false); }} type="button" className="btn btn-secondary mt-2" data-bs-dismiss="modal">Reaunudar</button>
                             <button onClick={() => { setModal(false); window.location.href = '/' }} type="button" className="btn btn-primary mt-2 " data-bs-dismiss="modal">Salir</button>
                         </div>
                     </div>

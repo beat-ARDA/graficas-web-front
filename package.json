@@ -19,7 +19,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start:dev": "REACT_APP_API_URL=http://192.168.100.111:3000/api/ react-scripts start"
   },
   "eslintConfig": {
     "extends": [

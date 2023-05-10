@@ -1,7 +1,8 @@
 import { MathUtils } from "three";
-import { villainsArray, bulletHeroeToDelete, villainsToDelete, infoGame, infoVillain, infoTwoPlayer } from "../../helpers/helpers";
+import { villainsArray, bulletHeroeToDelete, villainsToDelete, infoGame, infoVillain, infoTwoPlayer, userData, infoHeroe } from "../../helpers/helpers";
 import { Box3 } from "three";
-import { colisionVillain, lifesTwoPlayer } from "../event";
+import { colisionVillain, lifesTwoPlayer, winner } from "../event";
+import { insertScoreTwoPlayer } from "../../../../services/services";
 
 function setupBulletHeroe(
     data,
@@ -120,6 +121,13 @@ function setupBulletHeroe(
                 lifesTwoPlayer();
 
                 if (infoTwoPlayer.lifes <= 0) {
+                    insertScoreTwoPlayer({
+                        "user_name_one": infoHeroe.pos === 1 ? userData.user_name : infoTwoPlayer.nameUser,
+                        "user_name_two": infoHeroe.pos === 2 ? userData.user_name : infoTwoPlayer.nameUser,
+                        "winner": infoHeroe.pos
+                    });
+                    infoGame.winner = localStorage.getItem('socketId');
+                    winner();
                     scene.remove(infoTwoPlayer.model);
                     loop.stop();
                 }

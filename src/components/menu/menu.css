@@ -1,5 +1,5 @@
 .menu-background {
-    background-image: url('https://graficas-web-front.vercel.app/images/menu-fondo.png');
+    background-image: url('../../../public/images/menu-fondo.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -8,7 +8,7 @@
 }
 
 .background-boton-menu {
-    background-image: url('https://graficas-web-front.vercel.app/images/boton-menu2.png');
+    background-image: url('../../../public/images/boton-menu2.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;

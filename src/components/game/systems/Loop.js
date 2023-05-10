@@ -1,5 +1,5 @@
 import { Clock } from "three";
-import { infoHeroe } from "../helpers/helpers";
+import { infoHeroe, infoGame } from "../helpers/helpers";
 const clock = new Clock();
 
 class Loop {
@@ -11,10 +11,10 @@ class Loop {
     }
 
     start() {
-        this.renderer.setAnimationLoop(() => {
-            this.tick();
-            this.renderer.render(this.scene, this.camera);
-        });
+            this.renderer.setAnimationLoop(() => {
+                this.tick();
+                this.renderer.render(this.scene, this.camera);
+            });
     }
 
     stop() {

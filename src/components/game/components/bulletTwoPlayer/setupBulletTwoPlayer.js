@@ -88,7 +88,7 @@ function setupBulletTwoPlayer(
 
             if (infoHeroe.lifes <= 0) {
                 scene.remove(infoHeroe.model);
-                loop.stop();
+                //loop.stop();
             }
         }
     };
