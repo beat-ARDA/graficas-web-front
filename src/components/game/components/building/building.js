@@ -5,7 +5,7 @@ import { MathUtils } from 'three';
 async function loadBuilding() {
     const loader = new GLTFLoader();
 
-    const buildingData = await loader.loadAsync('/models/edificio.glb');
+    const buildingData = await loader.loadAsync('/models/edificio1.glb');
 
     const building = setupModel(buildingData);
 

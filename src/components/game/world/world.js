@@ -18,7 +18,6 @@ import { ambientLight } from '../components/lights/ambiental.js';
 import { spotLight } from '../components/lights/spot.js';
 import { directionalLight } from '../components/lights/directional.js';
 import { AudioListener, AudioLoader, Audio } from "three";
-import socketIO from 'socket.io-client';
 import { loadTwoPlayer } from '../components/twoPlayer/twoPlayer.js';
 import { loadTwoPlayerBullet } from '../components/bulletTwoPlayer/bulletTwoPlayer.js';
 

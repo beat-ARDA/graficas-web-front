@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './menu.css';
 import { infoGame, userData, infoHeroe, infoCamera, infoTwoPlayer } from '../game/helpers/helpers';
@@ -11,6 +11,27 @@ export default function Menu() {
 
     const [nameUser, setNameUser] = useState('');
     const [waitin, setWating] = useState(false);
+    const [comment, setComment] = useState('');
+
+    function insertComment(comment_) {
+        window.FB.init({
+            appId: '254319893822105',
+            cookie: true,
+            xfbml: true,
+            version: 'v12.0'
+        });
+
+        window.FB.api(
+            '/112540028503798/feed',
+            "POST",
+            {
+                message: comment_,
+                access_token: "EAADnTXbuOpkBAJZCLork02s6QM9y1T7ZCI8wrXCdHzLjuGMe00QUZCVU87UZBSgOaFGR6FOZBvUR0CXLaomBHNARDgejnGwzkkbp3mJSvZAX96mrkVu4rzZBsjxDZAxIqC3AB8sZAZC88HRmm64jovZCx5J88IJJBDb8FOsftOZBBiYVbtf77qWivoc6DZC2RGMH8ffNiqikMp0pukhoW7K4c1nFR"
+            },
+            function (response) {
+                console.log(response);
+            });
+    }
 
     function connectSocket() {
         infoGame.socket = socketIO.connect(process.env.REACT_APP_PATH_SOCKET_API);
@@ -83,6 +104,16 @@ export default function Menu() {
                     <div className='col-12 d-flex justify-content-center align-items-center'>
                         <small className='text-white fs-5 me-2'>User name: </small>
                         <input onChange={(e) => { setNameUser(e.target.value); }} type='text' name='nameUser' value={nameUser} />
+                    </div>
+                    <div className='col-12 d-flex justify-content-center align-items-center'>
+                        <small className='text-white fs-5 me-2'>Comparte un comentario en nuestra pagina!: </small>
+                        <input onChange={(e) => { setComment(e.target.value); }} type='text' name='nameUser' value={comment} />
+                        <button className='btn btn-primary' onClick={() => {
+                            if (comment !== '') {
+                                insertComment(comment);
+                                setComment('');
+                            }
+                        }}>Comentar</button>
                     </div>
                 </div>
             </div>
