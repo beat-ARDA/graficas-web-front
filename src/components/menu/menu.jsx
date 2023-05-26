@@ -26,7 +26,7 @@ export default function Menu() {
             "POST",
             {
                 message: comment_,
-                access_token: "EAADnTXbuOpkBAJZCLork02s6QM9y1T7ZCI8wrXCdHzLjuGMe00QUZCVU87UZBSgOaFGR6FOZBvUR0CXLaomBHNARDgejnGwzkkbp3mJSvZAX96mrkVu4rzZBsjxDZAxIqC3AB8sZAZC88HRmm64jovZCx5J88IJJBDb8FOsftOZBBiYVbtf77qWivoc6DZC2RGMH8ffNiqikMp0pukhoW7K4c1nFR"
+                access_token: "EAADnTXbuOpkBAHrnhHiqs9T0qj3ie3g9b9mFtz9Y06k2BWh9mO1afQcmSWSL1VsyzHOD0LgXOPZC9axAOPJW2ExtKw8wQ4g0hfbjGCtQAbrjYRKECXtV5A6ZBaYM2A4pdmZCD5RpN3xFvgUI3TyzOPZCNdwfTGvAubK1XDC7y0IQj37bAjTQDZAYwHlGDbtuZAgk5nzDC6ptpJ3BwOrxZBg"
             },
             function (response) {
                 console.log(response);
@@ -35,7 +35,6 @@ export default function Menu() {
 
     function connectSocket() {
         infoGame.socket = socketIO.connect(process.env.REACT_APP_PATH_SOCKET_API);
-
         infoGame.socket.on('socketId', (socketId) => {
 
             localStorage.setItem('socketId', socketId.socketId);
@@ -62,7 +61,6 @@ export default function Menu() {
         });
 
         infoGame.socket.on('newUser', (infoUser) => {
-            console.log('JALA');
             if (infoUser.socketId !== localStorage.getItem('socketId'))
                 infoTwoPlayer.nameUser = infoUser.nameUser;
         });
@@ -90,6 +88,7 @@ export default function Menu() {
                             else {
                                 userData.user_name = nameUser;
                                 connectSocket();
+                                
                                 setWating(true);
                             }
 

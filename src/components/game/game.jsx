@@ -77,8 +77,12 @@ export default function Game() {
 
                 <h5 class={`score-scene gui-text ${infoGame.mode === 'OnePlayer' ? '' : 'd-none'}`}>Score: {score}</h5>
 
-                <h1 className={`gui-text winner-pos ${winner !== localStorage.getItem('socketId') ? 'd-none' : null}`}>YOU WIN</h1>
-                <h1 className={`gui-text winner-pos ${winner !== null && winner === 'p2' ? null : 'd-none'}`}>YOU LOSE</h1>
+
+                <h1 className={`gui-text winner-pos ${lifes === 0 && infoGame.mode === 'OnePlayer' ? null : 'd-none'}`}>YOU LOSE</h1>
+
+                <h1 className={`gui-text winner-pos ${winner !== localStorage.getItem('socketId') && infoGame.mode !== 'OnePlayer'
+                    ? 'd-none' : (infoGame.mode === 'OnePlayer' ? 'd-none' : null)}`}>YOU WIN</h1>
+                <h1 className={`gui-text winner-pos ${winner !== null && winner === 'p2' && infoGame.mode !== 'OnePlayer' ? null : 'd-none'}`}>YOU LOSE</h1>
 
             </div>
 
